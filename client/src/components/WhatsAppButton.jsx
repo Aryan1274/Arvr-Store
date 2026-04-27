@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useCoupons } from '../context/CouponContext';
 
 const WhatsAppButton = () => {
@@ -14,7 +14,7 @@ const WhatsAppButton = () => {
       const productId = pathname.split('/')[2];
       const fetchProduct = async () => {
         try {
-          const res = await axios.get(`/api/products/${productId}`);
+          const res = await api.get(`/api/products/${productId}`);
           setCurrentProduct(res.data);
         } catch (err) { console.error(err); }
       };

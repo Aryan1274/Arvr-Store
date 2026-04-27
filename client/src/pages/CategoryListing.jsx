@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from '../components/ProductCard';
 import { useCoupons } from '../context/CouponContext';
 
@@ -21,7 +21,7 @@ const CategoryListing = () => {
       setLoading(true);
       try {
         const displayName = formatCategoryName(id);
-        const res = await axios.get(`/api/products?category=${displayName}`);
+        const res = await api.get(`/api/products?category=${displayName}`);
         setProducts(res.data);
       } catch (err) {
         console.error('Failed to fetch products:', err);

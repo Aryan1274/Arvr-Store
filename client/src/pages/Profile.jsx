@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Navigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { Package, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Profile = () => {
@@ -19,7 +19,7 @@ const Profile = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(`/api/orders/user/${user._id}`);
+      const res = await api.get(`/api/orders/user/${user._id}`);
       setOrders(res.data);
     } catch (err) {
       console.error('Failed to fetch orders:', err);

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { useCoupons } from '../context/CouponContext';
 
 const Checkout = () => {
@@ -24,7 +24,7 @@ const Checkout = () => {
   React.useEffect(() => {
     const fetchCoupons = async () => {
       try {
-        const res = await axios.get('/api/coupons');
+        const res = await api.get('/api/coupons');
         setAvailableCoupons(res.data);
       } catch (err) { console.error(err); }
     };
@@ -46,7 +46,7 @@ const Checkout = () => {
 
   const handleApplyCoupon = async () => {
     try {
-      const res = await axios.post('/api/coupons/validate', { code: couponCode, productIds: cartProductIds });
+      const res = await api.post('/api/coupons/validate', { code: couponCode, productIds: cartProductIds });
       setAppliedCoupon(res.data);
       alert('Coupon applied successfully!');
     } catch (err) {
@@ -96,7 +96,7 @@ const Checkout = () => {
       order_id: orderData.razorpayOrder.id,
       handler: async function (response) {
         try {
-          const verifyRes = await axios.post('/api/orders/verify', {
+          const verifyRes = await api.post('/api/orders/verify', {
             razorpay_order_id: response.razorpay_order_id,
             razorpay_payment_id: response.razorpay_payment_id,
             razorpay_signature: response.razorpay_signature,
@@ -140,7 +140,7 @@ const Checkout = () => {
         couponCode: appliedCoupon?.code
       };
 
-      const res = await axios.post('/api/orders/create', orderPayload);
+      const res = await api.post('/api/orders/create', orderPayload);
 
       if (paymentMethod === 'COD') {
         alert('Order placed successfully via Cash on Delivery!');

@@ -3,7 +3,7 @@ import { Menu, ShoppingBag, User, X, ShieldCheck, LogOut } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import api from '../api';
 
 const Navbar = () => {
   const { cart } = useCart();
@@ -15,7 +15,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const res = await axios.get('/api/categories');
+        const res = await api.get('/api/categories');
         setCategories(res.data.filter(c => !c.isSuspended));
       } catch (err) { console.error(err); }
     };

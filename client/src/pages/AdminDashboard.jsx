@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
@@ -72,7 +72,7 @@ const AdminDashboard = () => {
 
   const fetchCollections = async () => {
     try {
-      const res = await axios.get('/api/collections');
+      const res = await api.get('/api/collections');
       setCollections(res.data);
       const initialSelection = {};
       res.data.forEach(col => {
@@ -84,21 +84,21 @@ const AdminDashboard = () => {
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get('/api/orders');
+      const res = await api.get('/api/orders');
       setOrders(res.data);
     } catch (err) { console.error(err); }
   };
 
   const fetchProducts = async () => {
     try {
-      const res = await axios.get('/api/products');
+      const res = await api.get('/api/products');
       setProducts(res.data);
     } catch (err) { console.error(err); }
   };
 
   const fetchCategories = async () => {
     try {
-      const res = await axios.get('/api/categories');
+      const res = await api.get('/api/categories');
       setCategories(res.data);
       if (res.data.length > 0 && !formData.category) {
         setFormData(prev => ({ ...prev, category: res.data[0].name }));
@@ -108,21 +108,21 @@ const AdminDashboard = () => {
 
   const fetchTags = async () => {
     try {
-      const res = await axios.get('/api/tags');
+      const res = await api.get('/api/tags');
       setTags(res.data);
     } catch (err) { console.error(err); }
   };
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('/api/users');
+      const res = await api.get('/api/users');
       setUsers(Array.isArray(res.data) ? res.data : []);
     } catch (err) { console.error(err); setUsers([]); }
   };
 
   const fetchCoupons = async () => {
     try {
-      const res = await axios.get('/api/coupons');
+      const res = await api.get('/api/coupons');
       setCoupons(Array.isArray(res.data) ? res.data : []);
     } catch (err) { console.error(err); setCoupons([]); }
   };
@@ -130,7 +130,7 @@ const AdminDashboard = () => {
   const handleDeleteUser = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
-        await axios.get(`/api/users/delete/${id}`);
+        await api.get(`/api/users/delete/${id}`);
         fetchUsers();
       } catch (err) { alert('Failed to delete user'); }
     }
@@ -141,14 +141,14 @@ const AdminDashboard = () => {
   }
 
   const handleStatusUpdate = async (id, status) => {
-    await axios.put(`/api/orders/${id}/status`, { status });
+    await api.put(`/api/orders/${id}/status`, { status });
     fetchOrders();
   };
 
   const handleDeleteOrder = async (id) => {
     if (window.confirm('Delete this order record permanently?')) {
       try {
-        await axios.delete(`/api/orders/${id}`);
+        await api.delete(`/api/orders/${id}`);
         fetchOrders();
       } catch (err) { alert('Failed to delete order'); }
     }
@@ -157,7 +157,7 @@ const AdminDashboard = () => {
   const handleDeleteProduct = async (id) => {
     if (window.confirm('Are you sure you want to delete this product?')) {
       try {
-        await axios.delete(`/api/products/${id}`);
+        await api.delete(`/api/products/${id}`);
         fetchProducts();
       } catch (err) { alert('Failed to delete product'); }
     }
@@ -202,10 +202,10 @@ const AdminDashboard = () => {
 
     try {
       if (editingProduct) {
-        await axios.put(`/api/products/${editingProduct._id}`, data);
+        await api.put(`/api/products/${editingProduct._id}`, data);
         alert('Product updated successfully!');
       } else {
-        await axios.post('/api/products', data);
+        await api.post('/api/products', data);
         alert('Product added successfully!');
       }
       resetForm();
@@ -379,7 +379,7 @@ const AdminDashboard = () => {
                     <button 
                       onClick={async () => {
                         if (window.confirm('Delete selected categories?')) {
-                          await axios.delete('/api/categories/bulk', { data: { ids: selectedCats } });
+                          await api.delete('/api/categories/bulk', { data: { ids: selectedCats } });
                           setSelectedCats([]);
                           fetchCategories();
                         }
@@ -390,7 +390,7 @@ const AdminDashboard = () => {
                     </button>
                     <button 
                       onClick={async () => {
-                        await Promise.all(selectedCats.map(id => axios.put(`/api/categories/${id}`, { isSuspended: true })));
+                        await Promise.all(selectedCats.map(id => api.put(`/api/categories/${id}`, { isSuspended: true })));
                         setSelectedCats([]);
                         fetchCategories();
                       }}
@@ -400,7 +400,7 @@ const AdminDashboard = () => {
                     </button>
                     <button 
                       onClick={async () => {
-                        await Promise.all(selectedCats.map(id => axios.put(`/api/categories/${id}`, { isSuspended: false })));
+                        await Promise.all(selectedCats.map(id => api.put(`/api/categories/${id}`, { isSuspended: false })));
                         setSelectedCats([]);
                         fetchCategories();
                       }}
@@ -431,7 +431,7 @@ const AdminDashboard = () => {
                     data.append('name', catFormData.name);
                     data.append('image', catFormData.image);
                     try {
-                      await axios.post('/api/categories', data);
+                      await api.post('/api/categories', data);
                       setCatFormData({ name: '', image: null });
                       setIsCatFormOpen(false);
                       fetchCategories();
@@ -494,7 +494,7 @@ const AdminDashboard = () => {
                     <button 
                       onClick={async () => {
                         if (window.confirm('Delete selected tags?')) {
-                          await axios.delete('/api/tags/bulk', { data: { ids: selectedTagsList } });
+                          await api.delete('/api/tags/bulk', { data: { ids: selectedTagsList } });
                           setSelectedTagsList([]);
                           fetchTags();
                         }
@@ -505,7 +505,7 @@ const AdminDashboard = () => {
                     </button>
                     <button 
                       onClick={async () => {
-                        await Promise.all(selectedTagsList.map(id => axios.put(`/api/tags/${id}`, { isSuspended: true })));
+                        await Promise.all(selectedTagsList.map(id => api.put(`/api/tags/${id}`, { isSuspended: true })));
                         setSelectedTagsList([]);
                         fetchTags();
                       }}
@@ -515,7 +515,7 @@ const AdminDashboard = () => {
                     </button>
                     <button 
                       onClick={async () => {
-                        await Promise.all(selectedTagsList.map(id => axios.put(`/api/tags/${id}`, { isSuspended: false })));
+                        await Promise.all(selectedTagsList.map(id => api.put(`/api/tags/${id}`, { isSuspended: false })));
                         setSelectedTagsList([]);
                         fetchTags();
                       }}
@@ -545,7 +545,7 @@ const AdminDashboard = () => {
                     data.append('name', tagFormData.name);
                     data.append('image', tagFormData.image);
                     try {
-                      await axios.post('/api/tags', data);
+                      await api.post('/api/tags', data);
                       setTagFormData({ name: '', image: null });
                       setIsTagFormOpen(false);
                       fetchTags();
@@ -959,7 +959,7 @@ const AdminDashboard = () => {
                 onClick={async () => {
                   setLoading(true);
                   try {
-                    await axios.put(`/api/orders/${selectedOrderId}/status`, { deliveryDate: deliveryDateValue });
+                    await api.put(`/api/orders/${selectedOrderId}/status`, { deliveryDate: deliveryDateValue });
                     setIsDatePickerOpen(false);
                     fetchOrders();
                     alert('Delivery date updated and customer notified!');
@@ -1238,7 +1238,7 @@ const AdminDashboard = () => {
                         onClick={async () => {
                           setLoading(true);
                           try {
-                            await axios.post('/api/coupons', {
+                            await api.post('/api/coupons', {
                               ...couponFormData,
                               applicableProducts: selectedCouponProducts
                             });
@@ -1270,7 +1270,7 @@ const AdminDashboard = () => {
                   onClick={async () => {
                     setLoading(true);
                     try {
-                      await axios.post('/api/collections', {
+                      await api.post('/api/collections', {
                         name: currentToolSection,
                         products: tempSelectedProducts[currentToolSection] || []
                       });

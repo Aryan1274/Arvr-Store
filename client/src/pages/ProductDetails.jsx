@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import { useCoupons } from '../context/CouponContext';
@@ -19,12 +19,12 @@ const ProductDetails = () => {
     const fetchProductData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`/api/products/${id}`);
+        const res = await api.get(`/api/products/${id}`);
         setProduct(res.data);
         setMainImage(res.data.images[0]);
         
         // Fetch similar products in same category
-        const similarRes = await axios.get(`/api/products?category=${res.data.category}`);
+        const similarRes = await api.get(`/api/products?category=${res.data.category}`);
         setSimilarProducts(similarRes.data.filter(p => p._id !== res.data._id).slice(0, 4));
       } catch (err) {
         console.error('Failed to fetch product:', err);

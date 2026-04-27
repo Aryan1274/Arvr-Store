@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from './ProductCard';
 import { useCoupons } from '../context/CouponContext';
 
@@ -12,7 +12,7 @@ const DynamicSections = () => {
   useEffect(() => {
     const fetchCollections = async () => {
       try {
-        const res = await axios.get('/api/collections');
+        const res = await api.get('/api/collections');
         // Only show collections that have at least one product
         setCollections(res.data.filter(c => c.products.length > 0));
       } catch (err) {

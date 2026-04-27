@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from '../components/ProductCard';
 import { Search, ChevronLeft, Loader2 } from 'lucide-react';
 
@@ -22,7 +22,7 @@ const SearchResults = () => {
   const fetchResults = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(`/api/products/search?q=${query}`);
+      const res = await api.get(`/api/products/search?q=${query}`);
       setProducts(res.data);
     } catch (err) {
       console.error(err);

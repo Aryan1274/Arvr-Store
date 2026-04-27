@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const CouponContext = createContext();
 
@@ -8,7 +8,7 @@ export const CouponProvider = ({ children }) => {
 
   const fetchCoupons = async () => {
     try {
-      const res = await axios.get('/api/coupons');
+      const res = await api.get('/api/coupons');
       setCoupons(res.data);
     } catch (err) {
       console.error('Failed to fetch coupons:', err);

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const ThemeContext = createContext();
 
@@ -12,7 +12,7 @@ export const ThemeProvider = ({ children }) => {
 
   const fetchTheme = async () => {
     try {
-      const res = await axios.get('/api/settings/theme');
+      const res = await api.get('/api/settings/theme');
       setTheme(res.data.theme);
     } catch (err) {
       console.error('Failed to fetch theme:', err);
@@ -21,7 +21,7 @@ export const ThemeProvider = ({ children }) => {
 
   const updateTheme = async (newTheme) => {
     try {
-      await axios.post('/api/settings/theme', { theme: newTheme });
+      await api.post('/api/settings/theme', { theme: newTheme });
       setTheme(newTheme);
     } catch (err) {
       console.error('Failed to update theme:', err);

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 
 const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
 
   const loginWithGoogle = async (credential) => {
     try {
-      const response = await axios.post('/api/auth/google', { credential });
+      const response = await api.post('/api/auth/google', { credential });
       setUser(response.data.user);
       setToken(response.data.token);
       return true;

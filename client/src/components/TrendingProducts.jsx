@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../api';
 import ProductCard from './ProductCard';
 
 const TrendingProducts = () => {
@@ -9,7 +9,7 @@ const TrendingProducts = () => {
   useEffect(() => {
     const fetchTrending = async () => {
       try {
-        const res = await axios.get('/api/products');
+        const res = await api.get('/api/products');
         // Just show the first 4 for 'Trending'
         setProducts(res.data.slice(0, 4));
       } catch (err) {

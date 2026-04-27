@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { LayoutGrid } from 'lucide-react';
-import axios from 'axios';
+import api from '../api';
 
 const CategoryCards = () => {
   const [categories, setCategories] = useState([]);
@@ -9,7 +9,7 @@ const CategoryCards = () => {
   useEffect(() => {
     const fetchCats = async () => {
       try {
-        const res = await axios.get('/api/categories');
+        const res = await api.get('/api/categories');
         setCategories(res.data.filter(c => !c.isSuspended));
       } catch (err) { console.error(err); }
     };
