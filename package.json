@@ -1,0 +1,14 @@
+{
+  "name": "arvr-store",
+  "version": "1.0.0",
+  "description": "ARVR Store Root",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "server": "cd server && nodemon server.js",
+    "client": "cd client && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

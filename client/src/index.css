@@ -1,0 +1,56 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Pink Theme (Default) */
+  --primary: #f472b6;
+  --primary-hover: #db2777;
+  --primary-light: #fdf2f8;
+  --primary-dark: #be185d;
+  --text-main: #1f2937;
+  --text-muted: #9ca3af;
+  --bg-main: #fdf2f8;
+  --bg-card: #ffffff;
+  --border-color: #fce7f3;
+}
+
+.theme-blue {
+  --primary: #38bdf8;         /* Sky 400 */
+  --primary-hover: #0284c7;   /* Sky 600 */
+  --primary-light: #f0f9ff;   /* Sky 50 */
+  --primary-dark: #0369a1;    /* Sky 700 */
+  --text-main: #0c4a6e;       /* Sky 900 */
+  --text-muted: #64748b;      /* Slate 500 */
+  --bg-main: #f0f9ff;         /* Sky 50 */
+  --bg-card: #ffffff;
+  --border-color: #bae6fd;    /* Sky 200 */
+}
+
+.theme-white {
+  --primary: #171717;
+  --primary-hover: #404040;
+  --primary-light: #f5f5f5;
+  --primary-dark: #000000;
+  --text-main: #171717;
+  --text-muted: #737373;
+  --bg-main: #fafafa;
+  --bg-card: #ffffff;
+  --border-color: #e5e5e5;
+}
+
+@layer base {
+  body {
+    @apply bg-[var(--bg-main)] text-[var(--text-main)] font-sans transition-colors duration-500;
+  }
+}
+
+@layer utilities {
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}

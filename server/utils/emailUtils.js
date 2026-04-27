@@ -1,0 +1,113 @@
+const nodemailer = require('nodemailer');
+
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+const sendOrderConfirmationEmail = async (order) => {
+  const { address, products, totalPrice, _id } = order;
+  
+  const productDetails = products.map(p => `
+    <div style="display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+      <img src="${p.product.images[0]}" alt="${p.product.name}" style="width: 60px; height: 60px; object-cover; border-radius: 8px; margin-right: 15px;" />
+      <div>
+        <p style="margin: 0; font-weight: bold; color: #333;">${p.product.name}</p>
+        <p style="margin: 0; font-size: 12px; color: #666;">Qty: ${p.quantity} | ₹${p.product.price}</p>
+      </div>
+    </div>
+  `).join('');
+
+  const mailOptions = {
+    from: `"ArVr Store" <${process.env.EMAIL_USER}>`,
+    to: address.email,
+    subject: `Order Confirmed - #${_id.toString().slice(-6)}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #f0f0f0; border-radius: 12px; overflow: hidden;">
+        <div style="background-color: #f472b6; padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">ArVr Store</h1>
+        </div>
+        <div style="padding: 30px;">
+          <h2 style="color: #333;">Thank you for purchasing!</h2>
+          <p style="color: #555;">Best wishes from us, <strong>${address.name}</strong>. Great doing business with you!</p>
+          
+          <div style="margin: 30px 0; background-color: #fafafa; padding: 20px; border-radius: 12px;">
+            <h3 style="margin-top: 0; border-bottom: 2px solid #f472b6; display: inline-block; padding-bottom: 5px;">Order Details</h3>
+            <div style="margin-top: 15px;">
+              ${productDetails}
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 20px; font-weight: bold; font-size: 18px; color: #f472b6;">
+              <span>Total Amount:</span>
+              <span>₹${totalPrice}</span>
+            </div>
+          </div>
+
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:5173/profile" style="background-color: #333; color: white; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: bold;">Track Your Order</a>
+          </div>
+        </div>
+        <div style="background-color: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #999;">
+          © 2026 ArVr Store. All rights reserved.
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Order confirmation email sent');
+  } catch (error) {
+    console.error('Email sending failed:', error);
+  }
+};
+
+const sendOrderStatusUpdateEmail = async (order) => {
+  const { address, status, _id, deliveryDate } = order;
+
+  const deliveryInfo = deliveryDate ? `
+    <div style="margin-top: 15px; color: #666; font-size: 14px;">
+      <strong>Estimated Delivery Date:</strong> ${new Date(deliveryDate).toDateString()}
+    </div>
+  ` : '';
+
+  const mailOptions = {
+    from: `"ArVr Store" <${process.env.EMAIL_USER}>`,
+    to: address.email,
+    subject: `Order Status Updated - #${_id.toString().slice(-6)}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #f0f0f0; border-radius: 12px; overflow: hidden;">
+        <div style="background-color: #f472b6; padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">ArVr Store</h1>
+        </div>
+        <div style="padding: 30px;">
+          <h2 style="color: #333;">Order Status Update</h2>
+          <p style="color: #555;">Hi <strong>${address.name}</strong>, the status of your order <strong>#${_id.toString().slice(-6)}</strong> has been updated to:</p>
+          
+          <div style="margin: 30px 0; background-color: #fdf2f8; border-left: 4px solid #f472b6; padding: 20px; border-radius: 4px;">
+            <span style="font-size: 24px; font-weight: bold; color: #f472b6;">${status}</span>
+            ${deliveryInfo}
+          </div>
+
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="http://localhost:5173/profile" style="background-color: #333; color: white; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: bold;">Track Your Order</a>
+          </div>
+        </div>
+      </div>
+    `
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log('Order status update email sent');
+  } catch (error) {
+    console.error('Email sending failed:', error);
+  }
+};
+
+module.exports = { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail };
