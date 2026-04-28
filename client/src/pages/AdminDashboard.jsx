@@ -769,14 +769,14 @@ const AdminDashboard = () => {
                       <h5 className="text-base font-black text-gray-800 uppercase tracking-widest mb-6 flex items-center gap-2">
                         <Wrench className="w-5 h-5 text-primary" /> Product Add-ons (Variants)
                       </h5>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Sizes */}
-                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
-                          <label className="block text-xs font-black text-gray-400 uppercase tracking-tighter">Available Sizes</label>
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4 overflow-hidden">
+                          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-tighter">Available Sizes</label>
                           <div className="flex gap-2">
                             <input 
                               type="text" 
-                              className="flex-1 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
+                              className="w-full min-w-0 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
                               placeholder="e.g. XL"
                               value={currentSize}
                               onChange={e => setCurrentSize(e.target.value)}
@@ -801,11 +801,11 @@ const AdminDashboard = () => {
                                 });
                                 setCurrentSize('');
                               }
-                            }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95"><Plus className="w-4 h-4 text-gray-600" /></button>
+                            }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95 flex-shrink-0"><Plus className="w-4 h-4 text-gray-600" /></button>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {formData.variants.sizes.map((s, i) => (
-                              <span key={i} className="bg-pink-100 text-primary text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm">
+                              <span key={i} className="bg-pink-100 text-primary text-[9px] font-black px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-sm whitespace-nowrap">
                                 {s} <X className="w-3 h-3 cursor-pointer hover:scale-125 transition-transform" onClick={() => setFormData({...formData, variants: {...formData.variants, sizes: formData.variants.sizes.filter((_, idx) => idx !== i)}})} />
                               </span>
                             ))}
@@ -813,12 +813,12 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* Colors */}
-                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
-                          <label className="block text-xs font-black text-gray-400 uppercase tracking-tighter">Available Colors</label>
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4 overflow-hidden">
+                          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-tighter">Available Colors</label>
                           <div className="flex gap-2">
                             <input 
                               type="text" 
-                              className="flex-1 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
+                              className="w-full min-w-0 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
                               placeholder="e.g. Red"
                               value={currentColor}
                               onChange={e => setCurrentColor(e.target.value)}
@@ -843,11 +843,11 @@ const AdminDashboard = () => {
                                 });
                                 setCurrentColor('');
                               }
-                            }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95"><Plus className="w-4 h-4 text-gray-600" /></button>
+                            }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95 flex-shrink-0"><Plus className="w-4 h-4 text-gray-600" /></button>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {formData.variants.colors.map((c, i) => (
-                              <span key={i} className="bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm">
+                              <span key={i} className="bg-blue-100 text-blue-600 text-[9px] font-black px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-sm whitespace-nowrap">
                                 {c} <X className="w-3 h-3 cursor-pointer hover:scale-125 transition-transform" onClick={() => setFormData({...formData, variants: {...formData.variants, colors: formData.variants.colors.filter((_, idx) => idx !== i)}})} />
                               </span>
                             ))}
@@ -855,12 +855,12 @@ const AdminDashboard = () => {
                         </div>
 
                         {/* Custom */}
-                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
-                          <label className="block text-xs font-black text-gray-400 uppercase tracking-tighter">Custom Feature</label>
-                          <div className="space-y-2">
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4 overflow-hidden">
+                          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-tighter">Custom Feature</label>
+                          <div className="space-y-3">
                             <input 
                               type="text" 
-                              className="w-full border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
+                              className="w-full min-w-0 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
                               placeholder="Feature Name: e.g. Material"
                               value={formData.variants.custom.title}
                               onChange={e => setFormData({
@@ -871,7 +871,7 @@ const AdminDashboard = () => {
                             <div className="flex gap-2">
                               <input 
                                 type="text" 
-                                className="flex-1 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
+                                className="w-full min-w-0 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
                                 placeholder="Add Option"
                                 value={currentCustomOption}
                                 onChange={e => setCurrentCustomOption(e.target.value)}
@@ -902,12 +902,12 @@ const AdminDashboard = () => {
                                   });
                                   setCurrentCustomOption('');
                                 }
-                              }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95"><Plus className="w-4 h-4 text-gray-600" /></button>
+                              }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95 flex-shrink-0"><Plus className="w-4 h-4 text-gray-600" /></button>
                             </div>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {formData.variants.custom.options.map((o, i) => (
-                              <span key={i} className="bg-amber-100 text-amber-600 text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm">
+                              <span key={i} className="bg-amber-100 text-amber-600 text-[9px] font-black px-2.5 py-1.5 rounded-lg flex items-center gap-1 shadow-sm whitespace-nowrap">
                                 {o} <X className="w-3 h-3 cursor-pointer hover:scale-125 transition-transform" onClick={() => setFormData({
                                   ...formData, 
                                   variants: { 
