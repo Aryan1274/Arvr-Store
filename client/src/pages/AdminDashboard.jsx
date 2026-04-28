@@ -765,18 +765,18 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     {/* Variants / Add-ons Section */}
-                    <div className="md:col-span-2 border-t pt-6 mt-4">
-                      <h5 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
-                        <Wrench className="w-4 h-4 text-primary" /> Product Add-ons (Variants)
+                    <div className="md:col-span-2 border-t pt-8 mt-6">
+                      <h5 className="text-base font-black text-gray-800 uppercase tracking-widest mb-6 flex items-center gap-2">
+                        <Wrench className="w-5 h-5 text-primary" /> Product Add-ons (Variants)
                       </h5>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         {/* Sizes */}
-                        <div className="space-y-3">
-                          <label className="block text-xs font-bold text-gray-400 uppercase">Available Sizes</label>
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
+                          <label className="block text-xs font-black text-gray-400 uppercase tracking-tighter">Available Sizes</label>
                           <div className="flex gap-2">
                             <input 
                               type="text" 
-                              className="flex-1 border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary" 
+                              className="flex-1 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
                               placeholder="e.g. XL"
                               value={currentSize}
                               onChange={e => setCurrentSize(e.target.value)}
@@ -801,24 +801,24 @@ const AdminDashboard = () => {
                                 });
                                 setCurrentSize('');
                               }
-                            }} className="bg-gray-100 p-2 rounded-lg hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
+                            }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95"><Plus className="w-4 h-4 text-gray-600" /></button>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {formData.variants.sizes.map((s, i) => (
-                              <span key={i} className="bg-pink-50 text-primary text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
-                                {s} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData({...formData, variants: {...formData.variants, sizes: formData.variants.sizes.filter((_, idx) => idx !== i)}})} />
+                              <span key={i} className="bg-pink-100 text-primary text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm">
+                                {s} <X className="w-3 h-3 cursor-pointer hover:scale-125 transition-transform" onClick={() => setFormData({...formData, variants: {...formData.variants, sizes: formData.variants.sizes.filter((_, idx) => idx !== i)}})} />
                               </span>
                             ))}
                           </div>
                         </div>
 
                         {/* Colors */}
-                        <div className="space-y-3">
-                          <label className="block text-xs font-bold text-gray-400 uppercase">Available Colors</label>
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
+                          <label className="block text-xs font-black text-gray-400 uppercase tracking-tighter">Available Colors</label>
                           <div className="flex gap-2">
                             <input 
                               type="text" 
-                              className="flex-1 border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary" 
+                              className="flex-1 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
                               placeholder="e.g. Red"
                               value={currentColor}
                               onChange={e => setCurrentColor(e.target.value)}
@@ -843,70 +843,72 @@ const AdminDashboard = () => {
                                 });
                                 setCurrentColor('');
                               }
-                            }} className="bg-gray-100 p-2 rounded-lg hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
+                            }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95"><Plus className="w-4 h-4 text-gray-600" /></button>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {formData.variants.colors.map((c, i) => (
-                              <span key={i} className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
-                                {c} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData({...formData, variants: {...formData.variants, colors: formData.variants.colors.filter((_, idx) => idx !== i)}})} />
+                              <span key={i} className="bg-blue-100 text-blue-600 text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm">
+                                {c} <X className="w-3 h-3 cursor-pointer hover:scale-125 transition-transform" onClick={() => setFormData({...formData, variants: {...formData.variants, colors: formData.variants.colors.filter((_, idx) => idx !== i)}})} />
                               </span>
                             ))}
                           </div>
                         </div>
 
                         {/* Custom */}
-                        <div className="space-y-3">
-                          <label className="block text-xs font-bold text-gray-400 uppercase">Custom Add-on</label>
-                          <input 
-                            type="text" 
-                            className="w-full border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary mb-2" 
-                            placeholder="Title: e.g. Select Version"
-                            value={formData.variants.custom.title}
-                            onChange={e => setFormData({
-                              ...formData,
-                              variants: { ...formData.variants, custom: { ...formData.variants.custom, title: e.target.value } }
-                            })}
-                          />
-                          <div className="flex gap-2">
+                        <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 space-y-4">
+                          <label className="block text-xs font-black text-gray-400 uppercase tracking-tighter">Custom Feature</label>
+                          <div className="space-y-2">
                             <input 
                               type="text" 
-                              className="flex-1 border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary" 
-                              placeholder="Add Option"
-                              value={currentCustomOption}
-                              onChange={e => setCurrentCustomOption(e.target.value)}
-                              onKeyDown={e => {
-                                if (e.key === 'Enter') {
-                                  e.preventDefault();
-                                  if (currentCustomOption.trim()) {
-                                    setFormData({
-                                      ...formData,
-                                      variants: { 
-                                        ...formData.variants, 
-                                        custom: { ...formData.variants.custom, options: [...formData.variants.custom.options, currentCustomOption.trim()] } 
-                                      }
-                                    });
-                                    setCurrentCustomOption('');
-                                  }
-                                }
-                              }}
+                              className="w-full border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
+                              placeholder="Feature Name: e.g. Material"
+                              value={formData.variants.custom.title}
+                              onChange={e => setFormData({
+                                ...formData,
+                                variants: { ...formData.variants, custom: { ...formData.variants.custom, title: e.target.value } }
+                              })}
                             />
-                            <button type="button" onClick={() => {
-                              if (currentCustomOption.trim()) {
-                                setFormData({
-                                  ...formData,
-                                  variants: { 
-                                    ...formData.variants, 
-                                    custom: { ...formData.variants.custom, options: [...formData.variants.custom.options, currentCustomOption.trim()] } 
+                            <div className="flex gap-2">
+                              <input 
+                                type="text" 
+                                className="flex-1 border p-2.5 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary/20 bg-white shadow-sm" 
+                                placeholder="Add Option"
+                                value={currentCustomOption}
+                                onChange={e => setCurrentCustomOption(e.target.value)}
+                                onKeyDown={e => {
+                                  if (e.key === 'Enter') {
+                                    e.preventDefault();
+                                    if (currentCustomOption.trim()) {
+                                      setFormData({
+                                        ...formData,
+                                        variants: { 
+                                          ...formData.variants, 
+                                          custom: { ...formData.variants.custom, options: [...formData.variants.custom.options, currentCustomOption.trim()] } 
+                                        }
+                                      });
+                                      setCurrentCustomOption('');
+                                    }
                                   }
-                                });
-                                setCurrentCustomOption('');
-                              }
-                            }} className="bg-gray-100 p-2 rounded-lg hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
+                                }}
+                              />
+                              <button type="button" onClick={() => {
+                                if (currentCustomOption.trim()) {
+                                  setFormData({
+                                    ...formData,
+                                    variants: { 
+                                      ...formData.variants, 
+                                      custom: { ...formData.variants.custom, options: [...formData.variants.custom.options, currentCustomOption.trim()] } 
+                                    }
+                                  });
+                                  setCurrentCustomOption('');
+                                }
+                              }} className="bg-white border p-2.5 rounded-xl hover:bg-gray-100 shadow-sm transition-all active:scale-95"><Plus className="w-4 h-4 text-gray-600" /></button>
+                            </div>
                           </div>
                           <div className="flex flex-wrap gap-2">
                             {formData.variants.custom.options.map((o, i) => (
-                              <span key={i} className="bg-amber-50 text-amber-600 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
-                                {o} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData({
+                              <span key={i} className="bg-amber-100 text-amber-600 text-[10px] font-black px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm">
+                                {o} <X className="w-3 h-3 cursor-pointer hover:scale-125 transition-transform" onClick={() => setFormData({
                                   ...formData, 
                                   variants: { 
                                     ...formData.variants, 
