@@ -1240,13 +1240,16 @@ const AdminDashboard = () => {
                           try {
                             await api.post('/api/coupons', {
                               ...couponFormData,
+                              discountValue: Number(couponFormData.discountValue),
                               applicableProducts: selectedCouponProducts
                             });
                             fetchCoupons();
                             alert('Coupon created successfully!');
                             setIsToolsOpen(false);
                             setToolActiveMode('menu');
-                          } catch (err) { alert('Failed to create coupon'); }
+                          } catch (err) { 
+                            alert(err.response?.data?.message || 'Failed to create coupon. Check if the code is already used.'); 
+                          }
                           finally { setLoading(false); }
                         }}
                         disabled={loading}

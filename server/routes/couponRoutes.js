@@ -20,6 +20,9 @@ router.post('/', async (req, res) => {
     const newCoupon = await coupon.save();
     res.status(201).json(newCoupon);
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ message: 'A coupon with this code already exists.' });
+    }
     res.status(400).json({ message: err.message });
   }
 });
