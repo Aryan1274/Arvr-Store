@@ -59,13 +59,15 @@ router.get('/:id', async (req, res) => {
 // POST new product (Admin typically)
 router.post('/', upload.array('images', 5), async (req, res) => {
   try {
-    const { name, description, price, category, stock, tags } = req.body;
+    const { name, description, price, category, stock, tags, variants } = req.body;
     const imageUrls = req.files ? req.files.map(file => file.path) : [];
     
     let parsedTags = [];
+    let parsedVariants = {};
     try {
       if (tags) parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
-    } catch (err) { console.error('Tag parsing error', err); }
+      if (variants) parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants;
+    } catch (err) { console.error('Parsing error', err); }
 
     if (imageUrls.length === 0) {
       return res.status(400).json({ message: 'At least one image is required.' });
@@ -78,6 +80,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       category,
       stock: stock || 0,
       tags: parsedTags,
+      variants: parsedVariants,
       images: imageUrls
     });
 
@@ -91,13 +94,15 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 // UPDATE product (Admin)
 router.put('/:id', upload.array('images', 5), async (req, res) => {
   try {
-    const { name, description, price, category, stock, existingImages, tags } = req.body;
+    const { name, description, price, category, stock, existingImages, tags, variants } = req.body;
     let imageUrls = existingImages ? (Array.isArray(existingImages) ? existingImages : [existingImages]) : [];
     
     let parsedTags = [];
+    let parsedVariants = {};
     try {
       if (tags) parsedTags = typeof tags === 'string' ? JSON.parse(tags) : tags;
-    } catch (err) { console.error('Tag parsing error', err); }
+      if (variants) parsedVariants = typeof variants === 'string' ? JSON.parse(variants) : variants;
+    } catch (err) { console.error('Parsing error', err); }
 
     if (req.files && req.files.length > 0) {
       const newImages = req.files.map(file => file.path);
@@ -106,7 +111,7 @@ router.put('/:id', upload.array('images', 5), async (req, res) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, description, price, category, stock, images: imageUrls, tags: parsedTags },
+      { name, description, price, category, stock, images: imageUrls, tags: parsedTags, variants: parsedVariants },
       { returnDocument: 'after' }
     ).populate('tags');
     
