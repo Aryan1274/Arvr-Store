@@ -4,7 +4,12 @@ const orderSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
   products: [{
     product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-    quantity: { type: Number, required: true, default: 1 }
+    quantity: { type: Number, required: true, default: 1 },
+    selectedOptions: {
+      size: String,
+      color: String,
+      custom: String
+    }
   }],
   totalPrice: { type: Number, required: true },
   status: { type: String, enum: ['Pending', 'Processing', 'Dispatched', 'Delivered'], default: 'Pending' },

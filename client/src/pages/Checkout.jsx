@@ -133,7 +133,11 @@ const Checkout = () => {
     try {
       const orderPayload = {
         userId: user?._id || user?.id || null,
-        products: cart.map(item => ({ product: item._id || item.id, quantity: item.quantity })),
+        products: cart.map(item => ({ 
+          product: item._id || item.id, 
+          quantity: item.quantity,
+          selectedOptions: item.selectedOptions
+        })),
         totalPrice: calculateDiscountedTotal(),
         paymentType: paymentMethod,
         address: formData,
@@ -258,9 +262,18 @@ const Checkout = () => {
                   }
                 }
                 return (
-                  <div key={item.id} className="flex justify-between text-sm">
-                    <span className="text-gray-600 line-clamp-1 flex-1">{item.name} x {item.quantity}</span>
-                    <span className="font-semibold">₹{(itemPrice * item.quantity).toFixed(0)}</span>
+                  <div key={item.cartKey} className="flex flex-col text-sm border-b border-gray-100 pb-2 last:border-0">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600 line-clamp-1 flex-1 font-medium">{item.name} x {item.quantity}</span>
+                      <span className="font-semibold">₹{(itemPrice * item.quantity).toFixed(0)}</span>
+                    </div>
+                    {item.selectedOptions && (Object.values(item.selectedOptions).some(v => v)) && (
+                      <div className="text-[9px] text-primary font-bold uppercase mt-0.5">
+                        {item.selectedOptions.size && <span>Size: {item.selectedOptions.size} | </span>}
+                        {item.selectedOptions.color && <span>Color: {item.selectedOptions.color} | </span>}
+                        {item.selectedOptions.custom && <span>{item.selectedOptions.custom}</span>}
+                      </div>
+                    )}
                   </div>
                 );
               })}

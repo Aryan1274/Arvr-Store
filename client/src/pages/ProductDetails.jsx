@@ -14,6 +14,7 @@ const ProductDetails = () => {
   const [mainImage, setMainImage] = useState('');
   const [loading, setLoading] = useState(true);
   const { getProductDiscount } = useCoupons();
+  const [selectedOptions, setSelectedOptions] = useState({ size: '', color: '', custom: '' });
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -22,6 +23,16 @@ const ProductDetails = () => {
         const res = await api.get(`/api/products/${id}`);
         setProduct(res.data);
         setMainImage(res.data.images[0]);
+        
+        // Auto-select first options if available
+        const variants = res.data.variants;
+        if (variants) {
+          setSelectedOptions({
+            size: variants.sizes?.[0] || '',
+            color: variants.colors?.[0] || '',
+            custom: variants.custom?.options?.[0] || ''
+          });
+        }
         
         // Fetch similar products in same category
         const similarRes = await api.get(`/api/products?category=${res.data.category}`);
@@ -37,12 +48,12 @@ const ProductDetails = () => {
   }, [id]);
 
   const handleAddToCart = () => {
-    if (product) addToCart(product);
+    if (product) addToCart(product, selectedOptions);
   };
 
   const handleBuyNow = () => {
     if (product) {
-      addToCart(product);
+      addToCart(product, selectedOptions);
       navigate('/checkout');
     }
   };
@@ -119,6 +130,62 @@ const ProductDetails = () => {
           <p className="text-gray-600 mb-8 leading-relaxed whitespace-pre-wrap">
             {product.description}
           </p>
+
+          {/* Variant Selectors */}
+          {product.variants && (
+            <div className="space-y-6 mb-10 border-t pt-6">
+              {product.variants.sizes?.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Select Size</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.sizes.map(size => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedOptions({ ...selectedOptions, size })}
+                        className={`px-6 py-2 rounded-xl font-bold text-sm transition-all border-2 ${selectedOptions.size === size ? 'border-primary bg-primary text-white' : 'border-gray-100 text-gray-600 hover:border-primary/30'}`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {product.variants.colors?.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Select Color</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.colors.map(color => (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedOptions({ ...selectedOptions, color })}
+                        className={`px-6 py-2 rounded-xl font-bold text-sm transition-all border-2 ${selectedOptions.color === color ? 'border-primary bg-primary text-white' : 'border-gray-100 text-gray-600 hover:border-primary/30'}`}
+                      >
+                        {color}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {product.variants.custom?.options?.length > 0 && (
+                <div>
+                  <h4 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">{product.variants.custom.title || 'Choose Option'}</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.custom.options.map(opt => (
+                      <button
+                        key={opt}
+                        onClick={() => setSelectedOptions({ ...selectedOptions, custom: opt })}
+                        className={`px-6 py-2 rounded-xl font-bold text-sm transition-all border-2 ${selectedOptions.custom === opt ? 'border-primary bg-primary text-white' : 'border-gray-100 text-gray-600 hover:border-primary/30'}`}
+                      >
+                        {opt}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           <div className="flex gap-4 mt-auto">
             <button onClick={handleAddToCart} className="flex-1 bg-white border-2 border-primary text-primary hover:bg-pink-50 font-bold py-4 px-6 rounded-2xl transition-colors shadow-sm">

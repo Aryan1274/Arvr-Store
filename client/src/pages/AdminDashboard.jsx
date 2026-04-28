@@ -18,9 +18,24 @@ const AdminDashboard = () => {
   // Form States
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [formData, setFormData] = useState({ name: '', description: '', price: '', category: '', stock: 0, tags: [] });
-  const [images, setImages] = useState(null);
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    description: '', 
+    price: '', 
+    category: '', 
+    stock: 0, 
+    tags: [],
+    variants: {
+      sizes: [],
+      colors: [],
+      custom: { title: '', options: [] }
+    }
+  });
+  const [images, setImages] = useState([]); // Array for multi-image
   const [loading, setLoading] = useState(false);
+  const [currentSize, setCurrentSize] = useState('');
+  const [currentColor, setCurrentColor] = useState('');
+  const [currentCustomOption, setCurrentCustomOption] = useState('');
 
   // Category Tab States
   const [isCatFormOpen, setIsCatFormOpen] = useState(false);
@@ -172,7 +187,8 @@ const AdminDashboard = () => {
       price: product.price,
       category: product.category,
       stock: product.stock || 0,
-      tags: product.tags?.map(t => t._id || t) || []
+      tags: product.tags?.map(t => t._id || t) || [],
+      variants: product.variants || { sizes: [], colors: [], custom: { title: '', options: [] } }
     });
     setIsFormOpen(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -188,8 +204,9 @@ const AdminDashboard = () => {
     data.append('category', formData.category);
     data.append('stock', formData.stock);
     data.append('tags', JSON.stringify(formData.tags));
+    data.append('variants', JSON.stringify(formData.variants));
 
-    if (images) {
+    if (images && images.length > 0) {
       for (let i = 0; i < images.length; i++) {
         data.append('images', images[i]);
       }
@@ -220,8 +237,16 @@ const AdminDashboard = () => {
 
   const resetForm = () => {
     setEditingProduct(null);
-    setFormData({ name: '', description: '', price: '', category: categories[0]?.name || 'For Her', stock: 0, tags: [] });
-    setImages(null);
+    setFormData({ 
+      name: '', 
+      description: '', 
+      price: '', 
+      category: categories[0]?.name || 'For Her', 
+      stock: 0, 
+      tags: [],
+      variants: { sizes: [], colors: [], custom: { title: '', options: [] } }
+    });
+    setImages([]);
     setIsFormOpen(false);
   };
 
@@ -311,7 +336,23 @@ const AdminDashboard = () => {
                   {Array.isArray(orders) && orders.map(order => (
                     <tr key={order._id} className="border-b hover:bg-gray-50 transition-colors">
                       <td className="py-4 px-4 text-sm font-mono text-gray-500">{order._id?.slice(-6)}</td>
-                      <td className="py-4 px-4 font-medium">{order.user?.name || order.address?.name || 'Guest'}</td>
+                      <td className="py-4 px-4">
+                        <div className="font-bold text-gray-800">{order.user?.name || order.address?.name || 'Guest'}</div>
+                        <div className="mt-2 space-y-1">
+                          {order.products.map((item, idx) => (
+                            <div key={idx} className="text-[10px] bg-gray-50 p-1.5 rounded border border-gray-100">
+                              <div className="font-bold text-gray-600 truncate max-w-[150px]">{item.product?.name || 'Deleted Product'} <span className="text-primary">x{item.quantity}</span></div>
+                              {item.selectedOptions && (Object.values(item.selectedOptions).some(v => v)) && (
+                                <div className="text-[9px] text-primary font-bold flex flex-wrap gap-x-2 mt-0.5 uppercase tracking-tighter">
+                                  {item.selectedOptions.size && <span>Size: {item.selectedOptions.size}</span>}
+                                  {item.selectedOptions.color && <span>Color: {item.selectedOptions.color}</span>}
+                                  {item.selectedOptions.custom && <span>{item.selectedOptions.custom}</span>}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      </td>
                       <td className="py-4 px-4 text-sm text-gray-500">{order.address?.email || order.user?.email || 'N/A'}</td>
                       <td className="py-4 px-4 font-bold text-primary">₹{order.totalPrice}</td>
                       <td className="py-4 px-4 text-sm">{order.paymentType}</td>
@@ -721,6 +762,161 @@ const AdminDashboard = () => {
                             {tag.name}
                           </label>
                         ))}
+                      </div>
+                    </div>
+                    {/* Variants / Add-ons Section */}
+                    <div className="md:col-span-2 border-t pt-6 mt-4">
+                      <h5 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <Wrench className="w-4 h-4 text-primary" /> Product Add-ons (Variants)
+                      </h5>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Sizes */}
+                        <div className="space-y-3">
+                          <label className="block text-xs font-bold text-gray-400 uppercase">Available Sizes</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              className="flex-1 border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary" 
+                              placeholder="e.g. XL"
+                              value={currentSize}
+                              onChange={e => setCurrentSize(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  if (currentSize.trim()) {
+                                    setFormData({
+                                      ...formData,
+                                      variants: { ...formData.variants, sizes: [...formData.variants.sizes, currentSize.trim()] }
+                                    });
+                                    setCurrentSize('');
+                                  }
+                                }
+                              }}
+                            />
+                            <button type="button" onClick={() => {
+                              if (currentSize.trim()) {
+                                setFormData({
+                                  ...formData,
+                                  variants: { ...formData.variants, sizes: [...formData.variants.sizes, currentSize.trim()] }
+                                });
+                                setCurrentSize('');
+                              }
+                            }} className="bg-gray-100 p-2 rounded-lg hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {formData.variants.sizes.map((s, i) => (
+                              <span key={i} className="bg-pink-50 text-primary text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                                {s} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData({...formData, variants: {...formData.variants, sizes: formData.variants.sizes.filter((_, idx) => idx !== i)}})} />
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Colors */}
+                        <div className="space-y-3">
+                          <label className="block text-xs font-bold text-gray-400 uppercase">Available Colors</label>
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              className="flex-1 border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary" 
+                              placeholder="e.g. Red"
+                              value={currentColor}
+                              onChange={e => setCurrentColor(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  if (currentColor.trim()) {
+                                    setFormData({
+                                      ...formData,
+                                      variants: { ...formData.variants, colors: [...formData.variants.colors, currentColor.trim()] }
+                                    });
+                                    setCurrentColor('');
+                                  }
+                                }
+                              }}
+                            />
+                            <button type="button" onClick={() => {
+                              if (currentColor.trim()) {
+                                setFormData({
+                                  ...formData,
+                                  variants: { ...formData.variants, colors: [...formData.variants.colors, currentColor.trim()] }
+                                });
+                                setCurrentColor('');
+                              }
+                            }} className="bg-gray-100 p-2 rounded-lg hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {formData.variants.colors.map((c, i) => (
+                              <span key={i} className="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                                {c} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData({...formData, variants: {...formData.variants, colors: formData.variants.colors.filter((_, idx) => idx !== i)}})} />
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Custom */}
+                        <div className="space-y-3">
+                          <label className="block text-xs font-bold text-gray-400 uppercase">Custom Add-on</label>
+                          <input 
+                            type="text" 
+                            className="w-full border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary mb-2" 
+                            placeholder="Title: e.g. Select Version"
+                            value={formData.variants.custom.title}
+                            onChange={e => setFormData({
+                              ...formData,
+                              variants: { ...formData.variants, custom: { ...formData.variants.custom, title: e.target.value } }
+                            })}
+                          />
+                          <div className="flex gap-2">
+                            <input 
+                              type="text" 
+                              className="flex-1 border p-2 rounded-lg text-sm outline-none focus:ring-1 focus:ring-primary" 
+                              placeholder="Add Option"
+                              value={currentCustomOption}
+                              onChange={e => setCurrentCustomOption(e.target.value)}
+                              onKeyDown={e => {
+                                if (e.key === 'Enter') {
+                                  e.preventDefault();
+                                  if (currentCustomOption.trim()) {
+                                    setFormData({
+                                      ...formData,
+                                      variants: { 
+                                        ...formData.variants, 
+                                        custom: { ...formData.variants.custom, options: [...formData.variants.custom.options, currentCustomOption.trim()] } 
+                                      }
+                                    });
+                                    setCurrentCustomOption('');
+                                  }
+                                }
+                              }}
+                            />
+                            <button type="button" onClick={() => {
+                              if (currentCustomOption.trim()) {
+                                setFormData({
+                                  ...formData,
+                                  variants: { 
+                                    ...formData.variants, 
+                                    custom: { ...formData.variants.custom, options: [...formData.variants.custom.options, currentCustomOption.trim()] } 
+                                  }
+                                });
+                                setCurrentCustomOption('');
+                              }
+                            }} className="bg-gray-100 p-2 rounded-lg hover:bg-gray-200"><Plus className="w-4 h-4" /></button>
+                          </div>
+                          <div className="flex flex-wrap gap-2">
+                            {formData.variants.custom.options.map((o, i) => (
+                              <span key={i} className="bg-amber-50 text-amber-600 text-[10px] font-bold px-2 py-1 rounded-md flex items-center gap-1">
+                                {o} <X className="w-3 h-3 cursor-pointer" onClick={() => setFormData({
+                                  ...formData, 
+                                  variants: { 
+                                    ...formData.variants, 
+                                    custom: { ...formData.variants.custom, options: formData.variants.custom.options.filter((_, idx) => idx !== i) } 
+                                  }
+                                })} />
+                              </span>
+                            ))}
+                          </div>
+                        </div>
                       </div>
                     </div>
                     <div>

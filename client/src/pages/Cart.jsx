@@ -41,12 +41,21 @@ const Cart = () => {
             }
 
             return (
-              <div key={item.id} className="flex gap-4 border p-4 rounded-xl bg-white shadow-sm">
+              <div key={item.cartKey} className="flex gap-4 border p-4 rounded-xl bg-white shadow-sm">
                 <img src={item.image || item.images?.[0]} alt={item.name} className="w-24 h-24 object-cover rounded-lg bg-gray-100" />
                 <div className="flex-1 flex flex-col justify-between">
                   <div className="flex justify-between">
-                    <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                    <button onClick={() => removeFromCart(item.id)} className="text-red-500 text-sm hover:underline">Remove</button>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                      {item.selectedOptions && (Object.values(item.selectedOptions).some(v => v)) && (
+                        <div className="text-[10px] text-primary font-bold mt-1 flex gap-2">
+                          {item.selectedOptions.size && <span>SIZE: {item.selectedOptions.size}</span>}
+                          {item.selectedOptions.color && <span>COLOR: {item.selectedOptions.color}</span>}
+                          {item.selectedOptions.custom && <span>{item.selectedOptions.custom}</span>}
+                        </div>
+                      )}
+                    </div>
+                    <button onClick={() => removeFromCart(item.cartKey)} className="text-red-500 text-sm hover:underline">Remove</button>
                   </div>
                   <div className="flex items-center gap-2">
                     {hasDiscount ? (
@@ -60,9 +69,9 @@ const Cart = () => {
                   </div>
                   <div className="flex items-center gap-4 mt-2">
                     <div className="flex items-center border rounded-lg overflow-hidden">
-                      <button onClick={() => updateQuantity(item.id, -1)} className="px-3 py-1 bg-gray-50 hover:bg-gray-100">-</button>
+                      <button onClick={() => updateQuantity(item.cartKey, -1)} className="px-3 py-1 bg-gray-50 hover:bg-gray-100">-</button>
                       <span className="px-4 text-sm font-medium">{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, 1)} className="px-3 py-1 bg-gray-50 hover:bg-gray-100">+</button>
+                      <button onClick={() => updateQuantity(item.cartKey, 1)} className="px-3 py-1 bg-gray-50 hover:bg-gray-100">+</button>
                     </div>
                   </div>
                 </div>

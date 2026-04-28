@@ -11,6 +11,14 @@ const productSchema = new mongoose.Schema({
   availability: { type: Boolean, default: true },
   stock: { type: Number, default: 0 },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Tag' }],
+  variants: {
+    sizes: [String],
+    colors: [String],
+    custom: {
+      title: String,
+      options: [String]
+    }
+  }
 }, { timestamps: true });
 
 productSchema.pre('save', async function() {
