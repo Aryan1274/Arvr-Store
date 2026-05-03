@@ -31,10 +31,13 @@ const Checkout = () => {
     fetchCoupons();
   }, []);
 
-  if (cart.length === 0) {
-    navigate('/cart');
-    return null;
-  }
+  React.useEffect(() => {
+    if (cart.length === 0) {
+      navigate('/cart');
+    }
+  }, [cart.length, navigate]);
+
+  if (cart.length === 0) return null;
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -105,7 +108,11 @@ const Checkout = () => {
           if (verifyRes.data.success) {
             alert('Payment Successful!');
             clearCart();
-            navigate('/profile');
+            if (user) {
+              navigate('/profile');
+            } else {
+              navigate('/');
+            }
           }
         } catch (error) {
           console.error(error);
@@ -128,6 +135,12 @@ const Checkout = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!formData.name || !formData.mobile || !formData.email || !formData.addressLine || !formData.pincode || !formData.city || !formData.state) {
+      alert('Please fill in all required shipping details.');
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -147,9 +160,12 @@ const Checkout = () => {
       const res = await api.post('/api/orders/create', orderPayload);
 
       if (paymentMethod === 'COD') {
-        alert('Order placed successfully via Cash on Delivery!');
         clearCart();
-        navigate('/profile');
+        if (user) {
+          navigate('/profile');
+        } else {
+          navigate('/');
+        }
       } else {
         handleRazorpayPayment(res.data);
       }
@@ -171,13 +187,13 @@ const Checkout = () => {
             <h2 className="text-xl font-bold text-gray-800 mb-4">Shipping Details</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <input required name="name" value={formData.name} onChange={handleChange} placeholder="Full Name" className="border p-3 rounded-lg w-full" />
-              <input required name="mobile" onChange={handleChange} placeholder="Mobile Number" className="border p-3 rounded-lg w-full" />
+              <input required name="mobile" value={formData.mobile} onChange={handleChange} placeholder="Mobile Number" className="border p-3 rounded-lg w-full" />
               <input required name="email" value={formData.email} type="email" onChange={handleChange} placeholder="Email Address" className="border p-3 rounded-lg w-full md:col-span-2" />
-              <input required name="addressLine" onChange={handleChange} placeholder="Address Line" className="border p-3 rounded-lg w-full md:col-span-2" />
-              <input name="landmark" onChange={handleChange} placeholder="Landmark (Optional)" className="border p-3 rounded-lg w-full" />
-              <input required name="pincode" onChange={handleChange} placeholder="Pincode" className="border p-3 rounded-lg w-full" />
-              <input required name="city" onChange={handleChange} placeholder="City" className="border p-3 rounded-lg w-full" />
-              <input required name="state" onChange={handleChange} placeholder="State" className="border p-3 rounded-lg w-full" />
+              <input required name="addressLine" value={formData.addressLine} onChange={handleChange} placeholder="Address Line" className="border p-3 rounded-lg w-full md:col-span-2" />
+              <input name="landmark" value={formData.landmark} onChange={handleChange} placeholder="Landmark (Optional)" className="border p-3 rounded-lg w-full" />
+              <input required name="pincode" value={formData.pincode} onChange={handleChange} placeholder="Pincode" className="border p-3 rounded-lg w-full" />
+              <input required name="city" value={formData.city} onChange={handleChange} placeholder="City" className="border p-3 rounded-lg w-full" />
+              <input required name="state" value={formData.state} onChange={handleChange} placeholder="State" className="border p-3 rounded-lg w-full" />
             </div>
           </div>
 

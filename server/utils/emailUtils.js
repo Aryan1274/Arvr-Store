@@ -14,15 +14,19 @@ const transporter = nodemailer.createTransport({
 const sendOrderConfirmationEmail = async (order) => {
   const { address, products, totalPrice, _id } = order;
   
-  const productDetails = products.map(p => `
+  const productDetails = products.map(p => {
+    const productName = p.product?.name || 'Deleted Product';
+    const productPrice = p.price || p.product?.price || 0;
+    const productImage = p.product?.images?.[0] || 'https://via.placeholder.com/60';
+    return `
     <div style="display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-      <img src="${p.product.images[0]}" alt="${p.product.name}" style="width: 60px; height: 60px; object-cover; border-radius: 8px; margin-right: 15px;" />
+      <img src="${productImage}" alt="${productName}" style="width: 60px; height: 60px; object-cover; border-radius: 8px; margin-right: 15px;" />
       <div>
-        <p style="margin: 0; font-weight: bold; color: #333;">${p.product.name}</p>
-        <p style="margin: 0; font-size: 12px; color: #666;">Qty: ${p.quantity} | ₹${p.product.price}</p>
+        <p style="margin: 0; font-weight: bold; color: #333;">${productName}</p>
+        <p style="margin: 0; font-size: 12px; color: #666;">Qty: ${p.quantity} | ₹${productPrice}</p>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
   const mailOptions = {
     from: `"ArVr Store" <${process.env.EMAIL_USER}>`,

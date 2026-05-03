@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate } from 'react-router-dom';
 import api from '../api';
-import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket } from 'lucide-react';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
+import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket, Download } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const AdminDashboard = () => {
@@ -159,8 +161,13 @@ const AdminDashboard = () => {
   }
 
   const handleStatusUpdate = async (id, status) => {
-    await api.put(`/api/orders/${id}/status`, { status });
-    fetchOrders();
+    setOrders(prev => prev.map(order => order._id === id ? { ...order, status } : order));
+    try {
+      await api.put(`/api/orders/${id}/status`, { status });
+    } catch (error) {
+      console.error(error);
+      fetchOrders(); // Revert on failure
+    }
   };
 
   const handleDeleteOrder = async (id) => {
@@ -170,6 +177,84 @@ const AdminDashboard = () => {
         fetchOrders();
       } catch (err) { alert('Failed to delete order'); }
     }
+  };
+
+  const handleDownloadInvoice = (order) => {
+    const doc = new jsPDF();
+    const customerName = order.user?.name || order.address?.name || 'Guest';
+    const email = order.address?.email || order.user?.email || 'N/A';
+    const addressStr = order.address 
+      ? `${order.address.addressLine}, ${order.address.city}, ${order.address.state} - ${order.address.pincode}`
+      : 'N/A';
+
+    // Header
+    doc.setFontSize(22);
+    doc.setTextColor(244, 114, 182); // Primary pink
+    doc.text('ArVr Store', 14, 22);
+    
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text('Invoice for Order #' + (order._id?.slice(-6) || ''), 14, 30);
+    doc.text('Date: ' + new Date(order.createdAt).toLocaleDateString(), 14, 35);
+
+    // Customer Info
+    doc.setFontSize(12);
+    doc.setTextColor(40);
+    doc.text('Billed To:', 14, 50);
+    doc.setFontSize(10);
+    doc.setTextColor(80);
+    doc.text(`Name: ${customerName}`, 14, 57);
+    doc.text(`Email: ${email}`, 14, 62);
+    doc.text(`Address: ${addressStr}`, 14, 67);
+    if (order.address?.landmark) {
+      doc.text(`Landmark: ${order.address.landmark}`, 14, 72);
+    }
+    doc.text(`Payment Method: ${order.paymentType}`, 14, 77);
+
+    // Table Data
+    const tableColumn = ["Product", "Options", "Quantity", "Price", "Total"];
+    const tableRows = [];
+
+    order.products.forEach(item => {
+      const productName = item.product?.name || 'Deleted Product';
+      
+      let optionsStr = '';
+      if (item.selectedOptions) {
+        if (item.selectedOptions.size) optionsStr += `Size: ${item.selectedOptions.size}\n`;
+        if (item.selectedOptions.color) optionsStr += `Color: ${item.selectedOptions.color}\n`;
+        if (item.selectedOptions.custom) optionsStr += `Custom: ${item.selectedOptions.custom}\n`;
+      }
+      
+      const price = `Rs. ${item.price || item.product?.price || 0}`;
+      const total = `Rs. ${(item.price || item.product?.price || 0) * item.quantity}`;
+      
+      tableRows.push([productName, optionsStr.trim() || '-', item.quantity, price, total]);
+    });
+
+    // AutoTable
+    autoTable(doc, {
+      startY: 85,
+      head: [tableColumn],
+      body: tableRows,
+      theme: 'grid',
+      headStyles: { fillColor: [244, 114, 182] }, // Pink header
+      styles: { fontSize: 9 },
+      columnStyles: { 
+        0: { cellWidth: 60 },
+        1: { cellWidth: 40 }
+      }
+    });
+
+    // Totals
+    const finalY = doc.lastAutoTable.finalY || 85;
+    doc.setFontSize(12);
+    doc.setTextColor(40);
+    doc.text(`Total Amount: Rs. ${order.totalPrice}`, 14, finalY + 15);
+    if (order.couponCode) {
+      doc.text(`Coupon Applied: ${order.couponCode}`, 14, finalY + 22);
+    }
+
+    doc.save(`Invoice_${order._id?.slice(-6)}.pdf`);
   };
 
   const handleDeleteProduct = async (id) => {
@@ -324,27 +409,28 @@ const AdminDashboard = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b text-gray-400 text-sm">
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Order ID</th>
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Customer</th>
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Email</th>
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Amount</th>
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Payment</th>
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Status</th>
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Coupon</th>
-                    <th className="py-4 px-4 font-medium uppercase tracking-wider text-right">Actions</th>
+                  <tr className="border-b text-gray-400 text-xs">
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Order ID</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Customer</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Email</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Address</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Amount</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Payment</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Status</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Coupon</th>
+                    <th className="py-4 px-2 font-medium uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {Array.isArray(orders) && orders.map(order => (
                     <tr key={order._id} className="border-b hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-4 text-sm font-mono text-gray-500">{order._id?.slice(-6)}</td>
-                      <td className="py-4 px-4">
-                        <div className="font-bold text-gray-800">{order.user?.name || order.address?.name || 'Guest'}</div>
+                      <td className="py-4 px-2 text-xs font-mono text-gray-500">{order._id?.slice(-6)}</td>
+                      <td className="py-4 px-2">
+                        <div className="font-bold text-gray-800 text-sm">{order.user?.name || order.address?.name || 'Guest'}</div>
                         <div className="mt-2 space-y-1">
                           {order.products.map((item, idx) => (
-                            <div key={idx} className="text-[10px] bg-gray-50 p-1.5 rounded border border-gray-100">
-                              <div className="font-bold text-gray-600 truncate max-w-[150px]">{item.product?.name || 'Deleted Product'} <span className="text-primary">x{item.quantity}</span></div>
+                            <div key={idx} className="text-[10px] bg-gray-50 p-1.5 rounded border border-gray-100 max-w-[140px]">
+                              <div className="font-bold text-gray-600 truncate">{item.product?.name || 'Deleted Product'} <span className="text-primary">x{item.quantity}</span></div>
                               {item.selectedOptions && (Object.values(item.selectedOptions).some(v => v)) && (
                                 <div className="text-[9px] text-primary font-bold flex flex-wrap gap-x-2 mt-0.5 uppercase tracking-tighter">
                                   {item.selectedOptions.size && <span>Size: {item.selectedOptions.size}</span>}
@@ -356,10 +442,18 @@ const AdminDashboard = () => {
                           ))}
                         </div>
                       </td>
-                      <td className="py-4 px-4 text-sm text-gray-500">{order.address?.email || order.user?.email || 'N/A'}</td>
-                      <td className="py-4 px-4 font-bold text-primary">₹{order.totalPrice}</td>
-                      <td className="py-4 px-4 text-sm">{order.paymentType}</td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-2 text-[11px] text-gray-500 max-w-[120px] break-all">{order.address?.email || order.user?.email || 'N/A'}</td>
+                      <td className="py-4 px-2 text-[11px] text-gray-600 max-w-[160px] break-words">
+                        {order.address ? (
+                          <>
+                            {order.address.addressLine}, {order.address.city}, {order.address.state} - {order.address.pincode}
+                            {order.address.landmark && <><br /><span className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Landmark: {order.address.landmark}</span></>}
+                          </>
+                        ) : 'N/A'}
+                      </td>
+                      <td className="py-4 px-2 font-bold text-primary text-sm">₹{order.totalPrice}</td>
+                      <td className="py-4 px-2 text-xs">{order.paymentType}</td>
+                      <td className="py-4 px-2">
                         <select 
                           value={order.status} 
                           onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
@@ -372,17 +466,24 @@ const AdminDashboard = () => {
                           <option>Failed</option>
                         </select>
                       </td>
-                      <td className="py-4 px-4">
+                      <td className="py-4 px-2">
                         {order.couponCode ? (
-                          <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-[10px] font-black uppercase">
+                          <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-[10px] font-black uppercase max-w-[60px] truncate block">
                             {order.couponCode}
                           </span>
                         ) : (
                           <span className="text-gray-300 text-[10px]">—</span>
                         )}
                       </td>
-                      <td className="py-4 px-4 text-right">
+                      <td className="py-4 px-2 text-right">
                         <div className="flex justify-end items-center gap-2">
+                          <button 
+                            onClick={() => handleDownloadInvoice(order)}
+                            className="p-2 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Download Invoice PDF"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
                           <button 
                             onClick={() => {
                               setSelectedOrderId(order._id);

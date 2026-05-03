@@ -30,7 +30,8 @@ router.post('/create', async (req, res) => {
     const populatedOrder = await Order.findById(savedOrder._id).populate('products.product');
 
     if (paymentType === 'COD') {
-      await sendOrderConfirmationEmail(populatedOrder);
+      // Send email in background to prevent hanging the response
+      sendOrderConfirmationEmail(populatedOrder).catch(err => console.error('Background email error:', err));
       return res.status(201).json({ success: true, order: savedOrder });
     }
 
@@ -70,7 +71,7 @@ router.post('/verify', async (req, res) => {
 
     if (isAuthentic) {
       const order = await Order.findByIdAndUpdate(orderId, { status: 'Processing' }, { returnDocument: 'after' }).populate('products.product');
-      await sendOrderConfirmationEmail(order);
+      sendOrderConfirmationEmail(order).catch(err => console.error('Background email error:', err));
       res.json({ success: true, message: 'Payment verified successfully' });
     } else {
       await Order.findByIdAndUpdate(orderId, { status: 'Failed' });
@@ -112,7 +113,7 @@ router.put('/:id/status', async (req, res) => {
     const order = await Order.findByIdAndUpdate(
       req.params.id, 
       updateData, 
-      { returnDocument: 'after' }
+      { new: true }
     );
     
     if (order) {
