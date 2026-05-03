@@ -1,17 +1,26 @@
 const nodemailer = require('nodemailer');
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
-  },
-  tls: {
-    rejectUnauthorized: false
+const createTransporter = () => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.error('EMAIL_USER or EMAIL_PASS is missing in environment variables');
+    return null;
   }
-});
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
+    },
+    tls: {
+      rejectUnauthorized: false
+    }
+  });
+};
 
 const sendOrderConfirmationEmail = async (order) => {
+  const transporter = createTransporter();
+  if (!transporter) return;
+  
   const { address, products, totalPrice, _id } = order;
   
   const productDetails = products.map(p => {
@@ -65,9 +74,9 @@ const sendOrderConfirmationEmail = async (order) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('Order confirmation email sent');
+    console.log('Order confirmation email sent to:', address.email);
   } catch (error) {
-    console.error('Email sending failed:', error);
+    console.error('Email sending failed for order:', _id, error);
   }
 };
 
@@ -106,11 +115,14 @@ const sendOrderStatusUpdateEmail = async (order) => {
     `
   };
 
+  const transporter = createTransporter();
+  if (!transporter) return;
+
   try {
     await transporter.sendMail(mailOptions);
-    console.log('Order status update email sent');
+    console.log('Order status update email sent to:', address.email);
   } catch (error) {
-    console.error('Email sending failed:', error);
+    console.error('Email sending failed for status update:', _id, error);
   }
 };
 
