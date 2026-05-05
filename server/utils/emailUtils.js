@@ -1,35 +1,73 @@
-const nodemailer = require('nodemailer');
+const { OAuth2Client } = require('google-auth-library');
+const MailComposer = require('nodemailer/lib/mail-composer');
 
-const createTransporter = () => {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    console.error('EMAIL_USER or EMAIL_PASS is missing in environment variables');
-    return null;
-  }
-  return nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    },
-    tls: {
-      rejectUnauthorized: false
+/**
+ * Sends an email using the Gmail REST API (HTTP) to bypass SMTP port blocks on Render.
+ */
+const sendEmailViaAPI = async (mailOptions) => {
+  try {
+    const oauth2Client = new OAuth2Client(
+      process.env.GOOGLE_CLIENT_ID,
+      process.env.GOOGLE_CLIENT_SECRET
+    );
+
+    oauth2Client.setCredentials({
+      refresh_token: process.env.GOOGLE_REFRESH_TOKEN
+    });
+
+    const { token } = await oauth2Client.getAccessToken();
+
+    // Use MailComposer to create the RFC822 compliant email string
+    const mail = new MailComposer({
+      ...mailOptions,
+      from: `"ArVr Store" <${process.env.EMAIL_USER}>`
+    });
+    
+    const message = await mail.compile().build();
+    // Gmail API requires base64url encoding
+    const encodedMail = message.toString('base64')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_')
+      .replace(/=+$/, '');
+
+    const response = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/send`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        raw: encodedMail
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Gmail API Error: ${JSON.stringify(errorData)}`);
     }
-  });
+
+    return true;
+  } catch (error) {
+    console.error('Gmail API send failed:', error.message);
+    throw error;
+  }
 };
 
 const sendOrderConfirmationEmail = async (order) => {
-  const transporter = createTransporter();
-  if (!transporter) return;
-  
   const { address, products, totalPrice, _id } = order;
   
+  if (!address || !address.email) {
+    console.error('No recipient email found for order:', _id);
+    return;
+  }
+
   const productDetails = products.map(p => {
     const productName = p.product?.name || 'Deleted Product';
     const productPrice = p.price || p.product?.price || 0;
     const productImage = p.product?.images?.[0] || 'https://via.placeholder.com/60';
     return `
     <div style="display: flex; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-      <img src="${productImage}" alt="${productName}" style="width: 60px; height: 60px; object-cover; border-radius: 8px; margin-right: 15px;" />
+      <img src="${productImage}" alt="${productName}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;" />
       <div>
         <p style="margin: 0; font-weight: bold; color: #333;">${productName}</p>
         <p style="margin: 0; font-size: 12px; color: #666;">Qty: ${p.quantity} | ₹${productPrice}</p>
@@ -38,7 +76,6 @@ const sendOrderConfirmationEmail = async (order) => {
   `}).join('');
 
   const mailOptions = {
-    from: `"ArVr Store" <${process.env.EMAIL_USER}>`,
     to: address.email,
     subject: `Order Confirmed - #${_id.toString().slice(-6)}`,
     html: `
@@ -62,7 +99,7 @@ const sendOrderConfirmationEmail = async (order) => {
           </div>
 
           <div style="text-align: center; margin-top: 30px;">
-            <a href="http://localhost:5173/profile" style="background-color: #333; color: white; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: bold;">Track Your Order</a>
+            <a href="https://arvr-store.vercel.app/profile" style="background-color: #333; color: white; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: bold;">Track Your Order</a>
           </div>
         </div>
         <div style="background-color: #f9f9f9; padding: 15px; text-align: center; font-size: 12px; color: #999;">
@@ -73,15 +110,17 @@ const sendOrderConfirmationEmail = async (order) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log('Order confirmation email sent to:', address.email);
+    await sendEmailViaAPI(mailOptions);
+    console.log('Order confirmation email sent via API to:', address.email);
   } catch (error) {
-    console.error('Email sending failed for order:', _id, error);
+    console.error('Email sending failed for order:', _id);
   }
 };
 
 const sendOrderStatusUpdateEmail = async (order) => {
   const { address, status, _id, deliveryDate } = order;
+
+  if (!address || !address.email) return;
 
   const deliveryInfo = deliveryDate ? `
     <div style="margin-top: 15px; color: #666; font-size: 14px;">
@@ -90,7 +129,6 @@ const sendOrderStatusUpdateEmail = async (order) => {
   ` : '';
 
   const mailOptions = {
-    from: `"ArVr Store" <${process.env.EMAIL_USER}>`,
     to: address.email,
     subject: `Order Status Updated - #${_id.toString().slice(-6)}`,
     html: `
@@ -108,22 +146,20 @@ const sendOrderStatusUpdateEmail = async (order) => {
           </div>
 
           <div style="text-align: center; margin-top: 30px;">
-            <a href="http://localhost:5173/profile" style="background-color: #333; color: white; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: bold;">Track Your Order</a>
+            <a href="https://arvr-store.vercel.app/profile" style="background-color: #333; color: white; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: bold;">Track Your Order</a>
           </div>
         </div>
       </div>
     `
   };
 
-  const transporter = createTransporter();
-  if (!transporter) return;
-
   try {
-    await transporter.sendMail(mailOptions);
-    console.log('Order status update email sent to:', address.email);
+    await sendEmailViaAPI(mailOptions);
+    console.log('Order status update email sent via API to:', address.email);
   } catch (error) {
-    console.error('Email sending failed for status update:', _id, error);
+    console.error('Email sending failed for status update:', _id);
   }
 };
 
 module.exports = { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail };
+
