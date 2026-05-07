@@ -76,13 +76,13 @@ const DynamicSections = () => {
   if (loading) return null;
 
   return (
-    <div className="space-y-16 mb-24">
+    <div className="space-y-10 mb-24">
       {collections.map((collection) => {
         const isOffer = collection.template === 'offer';
         const isDeal = collection.template === 'deal';
         
         return (
-          <div key={collection._id} className={`py-12 ${isOffer ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-700 rounded-[3rem] shadow-xl shadow-pink-200/50 mx-4 text-white' : isDeal ? 'bg-gray-900 rounded-[3rem] shadow-2xl mx-4 text-white' : 'container mx-auto px-4'}`}>
+          <div key={collection._id} className={`${isOffer || isDeal ? 'py-12' : 'py-4'} ${isOffer ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-700 rounded-[3rem] shadow-xl shadow-pink-200/50 mx-4 text-white' : isDeal ? 'bg-gray-900 rounded-[3rem] shadow-2xl mx-4 text-white' : 'container mx-auto px-4'}`}>
             <div className={`container mx-auto px-6`}>
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
