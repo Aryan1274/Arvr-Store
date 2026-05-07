@@ -89,13 +89,14 @@ const DynamicSections = () => {
                   <div className="flex items-center gap-2 mb-2">
                     {isOffer && <div className="bg-white/20 backdrop-blur-sm text-white p-1.5 rounded-lg animate-pulse border border-white/30"><Gift className="w-4 h-4" /></div>}
                     {isDeal && <div className="bg-amber-500 text-white p-1.5 rounded-lg animate-bounce"><Zap className="w-4 h-4" /></div>}
-                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDeal ? 'text-amber-400' : isOffer ? 'text-rose-100' : 'text-primary'}`}>
-                      {isOffer ? 'Limited Time Offer' : isDeal ? 'Flash Deal' : 'Featured Collection'}
-                    </span>
+                    {(isOffer || isDeal) && (
+                      <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDeal ? 'text-amber-400' : isOffer ? 'text-rose-100' : 'text-primary'}`}>
+                        {isOffer ? 'Limited Time Offer' : 'Flash Deal'}
+                      </span>
+                    )}
                   </div>
                   <h2 className={`text-3xl md:text-4xl font-black tracking-tight flex items-center gap-3 ${isDeal || isOffer ? 'text-white' : 'text-gray-900'}`}>
                     {collection.title || collection.name}
-                    {!isOffer && !isDeal && <span className="text-primary">.</span>}
                   </h2>
                   <p className={`text-sm mt-2 font-medium ${isDeal ? 'text-gray-400' : isOffer ? 'text-rose-100/80' : 'text-gray-500'}`}>
                     Exclusive discounts handpicked just for you.

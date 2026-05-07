@@ -134,13 +134,14 @@ const CollectionDetail = () => {
               <div className="flex items-center gap-3 mb-4">
                 {isOffer && <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md border border-white/30 animate-pulse"><Gift className="w-5 h-5 text-white" /></div>}
                 {isDeal && <div className="bg-amber-500 p-2 rounded-xl shadow-lg shadow-amber-500/20 animate-bounce"><Zap className="w-5 h-5 text-white" /></div>}
-                <span className={`text-xs font-black uppercase tracking-[0.3em] ${isOffer ? 'text-rose-100' : isDeal ? 'text-amber-400' : 'text-primary'}`}>
-                  {isOffer ? 'Limited Time Exclusive' : isDeal ? 'Live Flash Deal' : 'Our Collection'}
-                </span>
+                {(isOffer || isDeal) && (
+                  <span className={`text-xs font-black uppercase tracking-[0.3em] ${isOffer ? 'text-rose-100' : 'text-amber-400'}`}>
+                    {isOffer ? 'Limited Time Exclusive' : 'Live Flash Deal'}
+                  </span>
+                )}
               </div>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter mb-4 leading-[0.9]">
                 {collection.title || collection.name}
-                {!isOffer && !isDeal && <span className="text-primary">.</span>}
               </h1>
               <p className={`text-lg font-medium max-w-lg ${isOffer ? 'text-rose-100/90' : isDeal ? 'text-gray-400' : 'text-gray-500'}`}>
                 {isOffer ? 'Premium handpicked items with exclusive discounts only for today.' : isDeal ? 'Grab these mega deals before the time runs out. Highest discounts ever!' : 'Browse through our curated selection of high-quality products.'}
