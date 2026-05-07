@@ -149,6 +149,29 @@ const AdminDashboard = () => {
     } catch (err) { console.error(err); setCoupons([]); }
   };
 
+  const handleReorder = async (currentIndex, direction) => {
+    const neighborIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
+    if (neighborIndex < 0 || neighborIndex >= collections.length) return;
+
+    const currentSection = collections[currentIndex];
+    const neighborSection = collections[neighborIndex];
+
+    // Swap their order values
+    const currentOrder = currentSection.order;
+    const neighborOrder = neighborSection.order;
+    
+    try {
+      // Use a temporary high value to avoid unique constraint issues if any, 
+      // although we don't have a unique constraint on 'order' field.
+      // But swapping is safer this way.
+      await api.put(`/api/collections/${currentSection._id}`, { order: neighborOrder });
+      await api.put(`/api/collections/${neighborSection._id}`, { order: currentOrder });
+      fetchCollections();
+    } catch (err) {
+      console.error('Failed to reorder:', err);
+    }
+  };
+
   const handleDeleteUser = async (id) => {
     if (window.confirm('Are you sure you want to delete this user?')) {
       try {
@@ -1289,22 +1312,14 @@ const AdminDashboard = () => {
                               </button>
                               <div className="h-4 w-[1px] bg-gray-200 mx-1"></div>
                               <button 
-                                onClick={async () => {
-                                  const newOrder = col.order - 1;
-                                  await api.put(`/api/collections/${col._id}`, { order: newOrder });
-                                  fetchCollections();
-                                }}
+                                onClick={() => handleReorder(idx, 'up')}
                                 disabled={idx === 0}
                                 className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 disabled:opacity-20"
                               >
                                 <MoveUp className="w-4 h-4" />
                               </button>
                               <button 
-                                onClick={async () => {
-                                  const newOrder = col.order + 1;
-                                  await api.put(`/api/collections/${col._id}`, { order: newOrder });
-                                  fetchCollections();
-                                }}
+                                onClick={() => handleReorder(idx, 'down')}
                                 disabled={idx === collections.length - 1}
                                 className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 disabled:opacity-20"
                               >
