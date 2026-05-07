@@ -62,6 +62,7 @@ router.post('/', async (req, res) => {
 // Update a collection by ID
 router.put('/:id', async (req, res) => {
   try {
+    const { title, order, template, isActive, products } = req.body;
     const updateData = { title, order, template, isActive, products };
     
     if (template === 'deal') {
