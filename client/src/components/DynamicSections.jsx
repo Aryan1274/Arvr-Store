@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import ProductCard from './ProductCard';
 import { useCoupons } from '../context/CouponContext';
-import { Timer, Zap, Gift, ChevronRight } from 'lucide-react';
+import { Timer, Zap, Gift, ChevronRight, Layout } from 'lucide-react';
 
 const FlashTimer = ({ endTime }) => {
   const [timeLeft, setTimeLeft] = useState({ h: '00', m: '00', s: '00' });
@@ -61,7 +61,7 @@ const DynamicSections = () => {
         // Only show active collections that have at least one product
         // and sort by order
         const sorted = res.data
-          .filter(c => c.isActive && (c.products.length > 0 || c.template === 'card'))
+          .filter(c => c.isActive && (c.products?.length > 0 || c.template === 'card'))
           .sort((a, b) => (a.order || 0) - (b.order || 0));
         setCollections(sorted);
       } catch (err) {
