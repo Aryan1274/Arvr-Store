@@ -153,22 +153,34 @@ const AdminDashboard = () => {
     const neighborIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
     if (neighborIndex < 0 || neighborIndex >= collections.length) return;
 
-    const currentSection = collections[currentIndex];
-    const neighborSection = collections[neighborIndex];
-
-    // Swap their order values
-    const currentOrder = currentSection.order;
-    const neighborOrder = neighborSection.order;
+    // OPTIMISTIC UI UPDATE: Swap immediately in local state
+    const newCollections = [...collections];
+    const currentSection = { ...newCollections[currentIndex] };
+    const neighborSection = { ...newCollections[neighborIndex] };
     
+    // Swap order values in local objects
+    const tempOrder = currentSection.order;
+    currentSection.order = neighborSection.order;
+    neighborSection.order = tempOrder;
+
+    // Swap positions in array
+    newCollections[currentIndex] = neighborSection;
+    newCollections[neighborIndex] = currentSection;
+
+    setCollections(newCollections);
+
     try {
-      // Use a temporary high value to avoid unique constraint issues if any, 
-      // although we don't have a unique constraint on 'order' field.
-      // But swapping is safer this way.
-      await api.put(`/api/collections/${currentSection._id}`, { order: neighborOrder });
-      await api.put(`/api/collections/${neighborSection._id}`, { order: currentOrder });
-      fetchCollections();
+      // Parallel API calls for speed
+      await Promise.all([
+        api.put(`/api/collections/${currentSection._id}`, { order: currentSection.order }),
+        api.put(`/api/collections/${neighborSection._id}`, { order: neighborSection.order })
+      ]);
+      // Silently sync with server to ensure consistency
+      const res = await api.get('/api/collections');
+      setCollections(res.data);
     } catch (err) {
       console.error('Failed to reorder:', err);
+      fetchCollections(); // Revert to server state on error
     }
   };
 
