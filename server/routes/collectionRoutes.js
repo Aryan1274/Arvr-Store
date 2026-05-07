@@ -33,13 +33,18 @@ router.post('/', async (req, res) => {
       await collection.save();
     } else {
       // Create new
+      let flashDealEnd = undefined;
+      if (template === 'deal') {
+        flashDealEnd = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      }
       collection = new Collection({
         name,
         title: title || name,
         products: products || [],
         order: order || 0,
         template: template || 'default',
-        isActive: isActive !== undefined ? isActive : true
+        isActive: isActive !== undefined ? isActive : true,
+        flashDealEnd
       });
       await collection.save();
     }
@@ -57,10 +62,22 @@ router.post('/', async (req, res) => {
 // Update a collection by ID
 router.put('/:id', async (req, res) => {
   try {
-    const { title, order, template, isActive, products } = req.body;
+    const updateData = { title, order, template, isActive, products };
+    
+    if (template === 'deal') {
+      // Set 24 hour timer only if it's not already set (to prevent resetting on every edit)
+      // or if it was NOT a deal before.
+      const existing = await Collection.findById(req.params.id);
+      if (existing.template !== 'deal' || !existing.flashDealEnd) {
+        updateData.flashDealEnd = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      }
+    } else {
+      updateData.flashDealEnd = null;
+    }
+
     const collection = await Collection.findByIdAndUpdate(
       req.params.id,
-      { title, order, template, isActive, products },
+      updateData,
       { new: true }
     ).populate({
       path: 'products',
