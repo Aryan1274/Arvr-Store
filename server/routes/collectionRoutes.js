@@ -13,7 +13,9 @@ router.get('/', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
-});// Get a single collection by ID
+});
+
+// Get a single collection by ID
 router.get('/:id', async (req, res) => {
   try {
     const collection = await Collection.findById(req.params.id).populate({

@@ -55,15 +55,19 @@ const CollectionDetail = () => {
   const navigate = useNavigate();
   const [collection, setCollection] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const { getProductDiscount } = useCoupons();
 
   useEffect(() => {
     const fetchCollection = async () => {
+      setLoading(true);
+      setError(null);
       try {
         const res = await api.get(`/api/collections/${id}`);
         setCollection(res.data);
       } catch (err) {
         console.error('Failed to fetch collection:', err);
+        setError(err.response?.data?.message || err.message);
       } finally {
         setLoading(false);
       }
@@ -90,7 +94,15 @@ const CollectionDetail = () => {
             <Zap className="w-10 h-10 text-red-500" />
           </div>
           <h2 className="text-2xl font-black text-gray-900 mb-2">Collection Not Found</h2>
-          <p className="text-gray-500 font-medium mb-8">The collection you are looking for doesn't exist or has been moved.</p>
+          <p className="text-gray-500 font-medium mb-4">The collection you are looking for doesn't exist or has been moved.</p>
+          
+          <div className="bg-gray-50 p-4 rounded-2xl mb-8 text-[10px] text-gray-400 font-mono text-left break-all border border-gray-100">
+            <p className="font-bold text-gray-500 mb-1 uppercase tracking-widest">Debug Info:</p>
+            <p>Target ID: {id}</p>
+            <p>Error: {error || 'No error message'}</p>
+            <p>Time: {new Date().toLocaleTimeString()}</p>
+          </div>
+
           <button 
             onClick={() => navigate('/')}
             className="w-full bg-gray-900 text-white font-black py-4 rounded-2xl hover:bg-black transition-all shadow-xl shadow-gray-200"
