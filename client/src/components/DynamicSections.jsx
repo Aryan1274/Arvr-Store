@@ -7,6 +7,7 @@ import { Timer, Zap, Gift, ChevronRight } from 'lucide-react';
 const DynamicSections = () => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timeLeft, setTimeLeft] = useState({ h: '23', m: '59', s: '59' });
   const { getProductDiscount } = useCoupons();
 
   useEffect(() => {
@@ -14,7 +15,11 @@ const DynamicSections = () => {
       try {
         const res = await api.get('/api/collections');
         // Only show active collections that have at least one product
-        setCollections(res.data.filter(c => c.isActive && c.products.length > 0));
+        // and sort by order
+        const sorted = res.data
+          .filter(c => c.isActive && c.products.length > 0)
+          .sort((a, b) => (a.order || 0) - (b.order || 0));
+        setCollections(sorted);
       } catch (err) {
         console.error('Failed to fetch collections:', err);
       } finally {
@@ -22,6 +27,30 @@ const DynamicSections = () => {
       }
     };
     fetchCollections();
+
+    const timer = setInterval(() => {
+      const now = new Date();
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      
+      const diff = endOfDay - now;
+      if (diff <= 0) {
+        setTimeLeft({ h: '00', m: '00', s: '00' });
+        return;
+      }
+
+      const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const m = Math.floor((diff / (1000 * 60)) % 60);
+      const s = Math.floor((diff / 1000) % 60);
+
+      setTimeLeft({
+        h: h.toString().padStart(2, '0'),
+        m: m.toString().padStart(2, '0'),
+        s: s.toString().padStart(2, '0')
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   if (loading) return null;
@@ -58,7 +87,7 @@ const DynamicSections = () => {
                     <Timer className="w-5 h-5 text-amber-400" />
                     <div>
                       <p className="text-[10px] font-bold text-amber-400 uppercase tracking-widest">Ending Soon</p>
-                      <p className="text-xl font-black font-mono">23 : 59 : 59</p>
+                      <p className="text-xl font-black font-mono">{timeLeft.h} : {timeLeft.m} : {timeLeft.s}</p>
                     </div>
                   </div>
                 )}
