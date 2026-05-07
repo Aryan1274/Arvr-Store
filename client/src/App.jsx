@@ -41,6 +41,7 @@ function App() {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/search" element={<SearchResults />} />
               <Route path="/collection/:id" element={<CollectionDetail />} />
+              <Route path="/collection/:id/card/:cardIndex" element={<CollectionDetail />} />
             </Routes>
           </main>
           <Footer />

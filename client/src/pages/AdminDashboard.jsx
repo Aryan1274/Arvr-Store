@@ -74,7 +74,7 @@ const AdminDashboard = () => {
   const [couponFormData, setCouponFormData] = useState({ code: '', type: '', discountType: 'Percentage', discountValue: 0 });
   const [couponStep, setCouponStep] = useState('type'); // 'type', 'categories', 'products', 'config'
   const [editingCollection, setEditingCollection] = useState(null);
-  const [collectionFormData, setCollectionFormData] = useState({ name: '', title: '', template: 'default', isActive: true, order: 0 });
+  const [collectionFormData, setCollectionFormData] = useState({ name: '', title: '', template: 'default', isActive: true, order: 0, cards: [] });
 
   useEffect(() => {
     localStorage.setItem('adminActiveTab', activeTab);
@@ -1272,7 +1272,7 @@ const AdminDashboard = () => {
                         <button 
                           onClick={() => {
                             setEditingCollection(null);
-                            setCollectionFormData({ name: '', title: '', template: 'default', isActive: true, order: collections.length });
+                            setCollectionFormData({ name: '', title: '', template: 'default', isActive: true, order: collections.length, cards: [] });
                             setToolView('edit');
                           }}
                           className="text-xs font-black text-primary flex items-center gap-1 hover:underline"
@@ -1308,7 +1308,7 @@ const AdminDashboard = () => {
                               <button 
                                 onClick={() => {
                                   setEditingCollection(col);
-                                  setCollectionFormData({ name: col.name, title: col.title, template: col.template, isActive: col.isActive, order: col.order });
+                                  setCollectionFormData({ name: col.name, title: col.title, template: col.template, isActive: col.isActive, order: col.order, cards: col.cards || [] });
                                   setToolView('edit');
                                 }}
                                 className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-primary transition-colors"
@@ -1379,6 +1379,7 @@ const AdminDashboard = () => {
                               <option value="default">Default Grid</option>
                               <option value="offer">Special Offer (Pink)</option>
                               <option value="deal">Flash Deal (Dark)</option>
+                              <option value="card">Special Card Offer (Horizontal)</option>
                             </select>
                           </div>
                           <div>
@@ -1410,6 +1411,142 @@ const AdminDashboard = () => {
                             </div>
                           </div>
                         </div>
+
+                        {/* CARD MANAGER (Only for 'card' template) */}
+                        {collectionFormData.template === 'card' && (
+                          <div className="pt-6 border-t animate-in slide-in-from-bottom-4">
+                            <div className="flex justify-between items-center mb-6">
+                              <div>
+                                <h5 className="text-sm font-black text-gray-800 uppercase tracking-widest">Card Manager</h5>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase">Add up to 10 special offer cards</p>
+                              </div>
+                              <button 
+                                onClick={() => {
+                                  if (collectionFormData.cards.length >= 10) return alert('Max 10 cards allowed');
+                                  setCollectionFormData({
+                                    ...collectionFormData,
+                                    cards: [...collectionFormData.cards, { text: 'New Card', cardType: 'price', priceLimit: 99, products: [], image: '' }]
+                                  });
+                                }}
+                                className="bg-primary text-white text-[10px] font-black uppercase px-4 py-2 rounded-xl shadow-lg shadow-pink-100"
+                              >
+                                + Add Card
+                              </button>
+                            </div>
+
+                            <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                              {collectionFormData.cards.map((card, cIdx) => (
+                                <div key={cIdx} className="p-4 bg-gray-50 rounded-3xl border-2 border-gray-100 space-y-4">
+                                  <div className="flex justify-between items-start">
+                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
+                                      <div>
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Card Text</label>
+                                        <input 
+                                          className="w-full bg-white border p-3 rounded-xl text-xs font-bold"
+                                          value={card.text}
+                                          onChange={e => {
+                                            const newCards = [...collectionFormData.cards];
+                                            newCards[cIdx].text = e.target.value;
+                                            setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                          }}
+                                          placeholder="e.g. Under ₹49"
+                                        />
+                                      </div>
+                                      <div>
+                                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest block mb-1">Card Image URL (Optional)</label>
+                                        <input 
+                                          className="w-full bg-white border p-3 rounded-xl text-xs font-bold"
+                                          value={card.image || ''}
+                                          onChange={e => {
+                                            const newCards = [...collectionFormData.cards];
+                                            newCards[cIdx].image = e.target.value;
+                                            setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                          }}
+                                          placeholder="https://..."
+                                        />
+                                      </div>
+                                    </div>
+                                    <button 
+                                      onClick={() => {
+                                        const newCards = collectionFormData.cards.filter((_, i) => i !== cIdx);
+                                        setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                      }}
+                                      className="ml-4 p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+
+                                  <div className="flex flex-wrap items-center gap-4 pt-2 border-t border-gray-200">
+                                    <div className="flex items-center gap-2">
+                                      <button 
+                                        onClick={() => {
+                                          const newCards = [...collectionFormData.cards];
+                                          newCards[cIdx].cardType = 'price';
+                                          setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                        }}
+                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${card.cardType === 'price' ? 'bg-primary text-white' : 'bg-white text-gray-400 border'}`}
+                                      >
+                                        By Price
+                                      </button>
+                                      <button 
+                                        onClick={() => {
+                                          const newCards = [...collectionFormData.cards];
+                                          newCards[cIdx].cardType = 'custom';
+                                          setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                        }}
+                                        className={`px-3 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${card.cardType === 'custom' ? 'bg-primary text-white' : 'bg-white text-gray-400 border'}`}
+                                      >
+                                        Custom Products
+                                      </button>
+                                    </div>
+
+                                    {card.cardType === 'price' ? (
+                                      <div className="flex items-center gap-2">
+                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Under ₹</span>
+                                        <input 
+                                          type="number"
+                                          className="w-20 bg-white border p-1.5 rounded-lg text-xs font-bold"
+                                          value={card.priceLimit}
+                                          onChange={e => {
+                                            const newCards = [...collectionFormData.cards];
+                                            newCards[cIdx].priceLimit = parseInt(e.target.value) || 0;
+                                            setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                          }}
+                                        />
+                                      </div>
+                                    ) : (
+                                      <button 
+                                        onClick={() => {
+                                          // Set up currentToolSection to a special name for this card
+                                          const cardSectionName = `${collectionFormData.name}_card${cIdx}`;
+                                          setCurrentToolSection(cardSectionName);
+                                          
+                                          // Pre-fill tempSelectedProducts for this card if it exists
+                                          setTempSelectedProducts({
+                                            ...tempSelectedProducts,
+                                            [cardSectionName]: card.products?.map(p => p._id || p) || []
+                                          });
+                                          
+                                          setToolView('categories');
+                                        }}
+                                        className="text-[10px] font-black text-primary hover:underline flex items-center gap-1"
+                                      >
+                                        <List className="w-3 h-3" /> 
+                                        Manage {card.products?.length || 0} Products
+                                      </button>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                              {collectionFormData.cards.length === 0 && (
+                                <div className="text-center py-10 border-2 border-dashed border-gray-200 rounded-3xl">
+                                  <p className="text-xs text-gray-400 font-bold italic">No cards added. Click "+ Add Card" to start.</p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
 
                       <div className="flex gap-4 pt-4 border-t">
@@ -1642,10 +1779,22 @@ const AdminDashboard = () => {
             {toolActiveMode === 'collections' && (toolView === 'products' || toolView === 'categories') && (
               <div className="p-6 border-t bg-gray-50/50 flex items-center justify-between">
                 <p className="text-xs font-bold text-gray-400">
-                  {currentToolSection ? `Editing Products for: ${currentToolSection}` : 'Select a section to begin'}
+                  {currentToolSection ? `Editing Products for: ${currentToolSection.includes('_card') ? `Card ${parseInt(currentToolSection.split('_card')[1]) + 1}` : currentToolSection}` : 'Select a section to begin'}
                 </p>
                 <button 
                   onClick={async () => {
+                    if (currentToolSection.includes('_card')) {
+                      // Logic for updating products within a specific card in the form
+                      const [sectionName, cardSuffix] = currentToolSection.split('_card');
+                      const cardIdx = parseInt(cardSuffix);
+                      const newCards = [...collectionFormData.cards];
+                      newCards[cardIdx].products = tempSelectedProducts[currentToolSection] || [];
+                      setCollectionFormData({ ...collectionFormData, cards: newCards });
+                      setToolView('edit');
+                      alert('Card products updated locally. Don\'t forget to Save the Section!');
+                      return;
+                    }
+
                     setLoading(true);
                     try {
                       await api.post('/api/collections', {
@@ -1661,7 +1810,7 @@ const AdminDashboard = () => {
                   disabled={!currentToolSection || loading}
                   className="bg-primary text-white font-bold py-3 px-8 rounded-2xl shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all flex items-center gap-2 disabled:opacity-50 disabled:grayscale"
                 >
-                  {loading ? 'Saving...' : <><Save className="w-5 h-5" /> Save Product Selection</>}
+                  {loading ? 'Saving...' : <><Save className="w-5 h-5" /> {currentToolSection?.includes('_card') ? 'Confirm Selection' : 'Save Product Selection'}</>}
                 </button>
               </div>
             )}

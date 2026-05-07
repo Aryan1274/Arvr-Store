@@ -18,10 +18,15 @@ router.get('/', async (req, res) => {
 // Get a single collection by ID
 router.get('/:id', async (req, res) => {
   try {
-    const collection = await Collection.findById(req.params.id).populate({
-      path: 'products',
-      populate: { path: 'tags' }
-    });
+    const collection = await Collection.findById(req.params.id)
+      .populate({
+        path: 'products',
+        populate: { path: 'tags' }
+      })
+      .populate({
+        path: 'cards.products',
+        populate: { path: 'tags' }
+      });
     if (!collection) return res.status(404).json({ message: 'Collection not found' });
     res.json(collection);
   } catch (error) {
@@ -32,7 +37,7 @@ router.get('/:id', async (req, res) => {
 // Create a new collection
 router.post('/', async (req, res) => {
   try {
-    const { name, title, products, order, template, isActive } = req.body;
+    const { name, title, products, order, template, isActive, cards } = req.body;
     
     // Check if collection with name exists
     let collection = await Collection.findOne({ name });
@@ -58,7 +63,8 @@ router.post('/', async (req, res) => {
         order: order || 0,
         template: template || 'default',
         isActive: isActive !== undefined ? isActive : true,
-        flashDealEnd
+        flashDealEnd,
+        cards: cards || []
       });
       await collection.save();
     }
@@ -76,8 +82,8 @@ router.post('/', async (req, res) => {
 // Update a collection by ID
 router.put('/:id', async (req, res) => {
   try {
-    const { title, order, template, isActive, products } = req.body;
-    const updateData = { title, order, template, isActive, products };
+    const { title, order, template, isActive, products, cards } = req.body;
+    const updateData = { title, order, template, isActive, products, cards };
     
     if (template === 'deal') {
       // Set 24 hour timer only if it's not already set (to prevent resetting on every edit)
