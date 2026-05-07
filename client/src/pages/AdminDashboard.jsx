@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import api from '../api';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket, Download } from 'lucide-react';
+import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket, Download, Eye, EyeOff, MoveUp, MoveDown, Layout, List } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const AdminDashboard = () => {
@@ -73,6 +73,8 @@ const AdminDashboard = () => {
   const [selectedCouponProducts, setSelectedCouponProducts] = useState([]);
   const [couponFormData, setCouponFormData] = useState({ code: '', type: '', discountType: 'Percentage', discountValue: 0 });
   const [couponStep, setCouponStep] = useState('type'); // 'type', 'categories', 'products', 'config'
+  const [editingCollection, setEditingCollection] = useState(null);
+  const [collectionFormData, setCollectionFormData] = useState({ name: '', title: '', template: 'default', isActive: true, order: 0 });
 
   useEffect(() => {
     localStorage.setItem('adminActiveTab', activeTab);
@@ -1225,21 +1227,184 @@ const AdminDashboard = () => {
                 </div>
               )}
 
-              {/* COLLECTIONS MODE (Existing Logic) */}
+              {/* COLLECTIONS MODE (Dynamic Logic) */}
               {toolActiveMode === 'collections' && (
                 <>
                   {toolView === 'sections' ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {['Trending', 'Recommended', 'Best Sell', 'Most Loved'].map(section => (
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center mb-2">
+                        <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Live Sections</p>
                         <button 
-                          key={section}
-                          onClick={() => { setCurrentToolSection(section); setToolView('categories'); }}
-                          className="p-6 rounded-2xl border-2 border-gray-100 hover:border-primary hover:bg-pink-50 transition-all text-left group"
+                          onClick={() => {
+                            setEditingCollection(null);
+                            setCollectionFormData({ name: '', title: '', template: 'default', isActive: true, order: collections.length });
+                            setToolView('edit');
+                          }}
+                          className="text-xs font-black text-primary flex items-center gap-1 hover:underline"
                         >
-                          <h5 className="font-black text-gray-800 group-hover:text-primary transition-colors">{section}</h5>
-                          <p className="text-xs text-gray-400 mt-1">{(tempSelectedProducts[section] || []).length} Products Selected</p>
+                          <Plus className="w-3 h-3" /> Add New Section
                         </button>
-                      ))}
+                      </div>
+                      <div className="grid grid-cols-1 gap-3">
+                        {collections.map((col, idx) => (
+                          <div 
+                            key={col._id}
+                            className={`p-4 rounded-2xl border-2 transition-all flex items-center justify-between group ${col.isActive ? 'border-gray-100 bg-white hover:border-primary' : 'border-gray-50 bg-gray-50 opacity-60'}`}
+                          >
+                            <div className="flex items-center gap-4">
+                              <div className={`p-3 rounded-xl ${col.template === 'offer' ? 'bg-pink-100 text-pink-600' : col.template === 'deal' ? 'bg-amber-100 text-amber-600' : 'bg-gray-100 text-gray-600'}`}>
+                                {col.template === 'offer' ? <Gift className="w-5 h-5" /> : col.template === 'deal' ? <Zap className="w-5 h-5" /> : <Layout className="w-5 h-5" />}
+                              </div>
+                              <div>
+                                <h5 className="font-black text-gray-800 flex items-center gap-2">
+                                  {col.title || col.name}
+                                  {!col.isActive && <span className="text-[8px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded uppercase">Suspended</span>}
+                                </h5>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                  {col.products?.length || 0} Products • {col.template} Template
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <button 
+                                onClick={() => {
+                                  setEditingCollection(col);
+                                  setCollectionFormData({ name: col.name, title: col.title, template: col.template, isActive: col.isActive, order: col.order });
+                                  setToolView('edit');
+                                }}
+                                className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-primary transition-colors"
+                                title="Edit Settings"
+                              >
+                                <Pencil className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={() => {
+                                  setCurrentToolSection(col.name);
+                                  setToolView('categories');
+                                }}
+                                className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 hover:text-primary transition-colors"
+                                title="Manage Products"
+                              >
+                                <List className="w-4 h-4" />
+                              </button>
+                              <div className="h-4 w-[1px] bg-gray-200 mx-1"></div>
+                              <button 
+                                onClick={async () => {
+                                  const newOrder = col.order - 1;
+                                  await api.put(`/api/collections/${col._id}`, { order: newOrder });
+                                  fetchCollections();
+                                }}
+                                disabled={idx === 0}
+                                className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 disabled:opacity-20"
+                              >
+                                <MoveUp className="w-4 h-4" />
+                              </button>
+                              <button 
+                                onClick={async () => {
+                                  const newOrder = col.order + 1;
+                                  await api.put(`/api/collections/${col._id}`, { order: newOrder });
+                                  fetchCollections();
+                                }}
+                                disabled={idx === collections.length - 1}
+                                className="p-2 hover:bg-gray-100 rounded-lg text-gray-400 disabled:opacity-20"
+                              >
+                                <MoveDown className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ) : toolView === 'edit' ? (
+                    <div className="space-y-6 animate-in slide-in-from-right-4">
+                      <div className="grid grid-cols-1 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Section ID (Unique Name)</label>
+                          <input 
+                            disabled={editingCollection}
+                            className="w-full border-2 border-gray-100 p-4 rounded-2xl focus:ring-2 focus:ring-primary outline-none font-bold"
+                            value={collectionFormData.name}
+                            onChange={e => setCollectionFormData({ ...collectionFormData, name: e.target.value.toLowerCase().replace(/ /g, '_') })}
+                            placeholder="e.g. winter_specials"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Display Title</label>
+                          <input 
+                            className="w-full border-2 border-gray-100 p-4 rounded-2xl focus:ring-2 focus:ring-primary outline-none font-bold"
+                            value={collectionFormData.title}
+                            onChange={e => setCollectionFormData({ ...collectionFormData, title: e.target.value })}
+                            placeholder="e.g. Hot Winter Deals"
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">UI Template</label>
+                            <select 
+                              className="w-full border-2 border-gray-100 p-4 rounded-2xl focus:ring-2 focus:ring-primary outline-none font-bold"
+                              value={collectionFormData.template}
+                              onChange={e => setCollectionFormData({ ...collectionFormData, template: e.target.value })}
+                            >
+                              <option value="default">Default Grid</option>
+                              <option value="offer">Special Offer (Pink)</option>
+                              <option value="deal">Flash Deal (Dark)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Status</label>
+                            <div className="flex gap-2">
+                              <button 
+                                onClick={() => setCollectionFormData({ ...collectionFormData, isActive: true })}
+                                className={`flex-1 p-4 rounded-2xl font-black text-xs transition-all ${collectionFormData.isActive ? 'bg-green-500 text-white shadow-lg shadow-green-100' : 'bg-gray-100 text-gray-400'}`}
+                              >
+                                Active
+                              </button>
+                              <button 
+                                onClick={() => setCollectionFormData({ ...collectionFormData, isActive: false })}
+                                className={`flex-1 p-4 rounded-2xl font-black text-xs transition-all ${!collectionFormData.isActive ? 'bg-red-500 text-white shadow-lg shadow-red-100' : 'bg-gray-100 text-gray-400'}`}
+                              >
+                                Suspended
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex gap-4 pt-4 border-t">
+                        {editingCollection && (
+                          <button 
+                            onClick={async () => {
+                              if (window.confirm('Delete this entire section?')) {
+                                await api.delete(`/api/collections/${editingCollection._id}`);
+                                fetchCollections();
+                                setToolView('sections');
+                              }
+                            }}
+                            className="p-4 rounded-2xl border-2 border-red-50 hover:bg-red-50 text-red-500 transition-all"
+                          >
+                            <Trash2 className="w-5 h-5" />
+                          </button>
+                        )}
+                        <button 
+                          onClick={async () => {
+                            setLoading(true);
+                            try {
+                              if (editingCollection) {
+                                await api.put(`/api/collections/${editingCollection._id}`, collectionFormData);
+                              } else {
+                                await api.post('/api/collections', collectionFormData);
+                              }
+                              fetchCollections();
+                              setToolView('sections');
+                              alert('Section saved successfully!');
+                            } catch (err) { alert('Failed to save section'); }
+                            finally { setLoading(false); }
+                          }}
+                          className="flex-1 bg-primary text-white font-black py-4 rounded-2xl shadow-xl shadow-pink-100 hover:bg-pink-500 transition-all flex items-center justify-center gap-2"
+                        >
+                          <Save className="w-5 h-5" /> {editingCollection ? 'Update Section' : 'Create Section'}
+                        </button>
+                      </div>
                     </div>
                   ) : toolView === 'categories' ? (
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -1432,10 +1597,10 @@ const AdminDashboard = () => {
             </div>
 
             {/* Modal Footer (For Collections Mode) */}
-            {toolActiveMode === 'collections' && (
+            {toolActiveMode === 'collections' && (toolView === 'products' || toolView === 'categories') && (
               <div className="p-6 border-t bg-gray-50/50 flex items-center justify-between">
                 <p className="text-xs font-bold text-gray-400">
-                  {currentToolSection ? `Editing: ${currentToolSection}` : 'Select a section to begin'}
+                  {currentToolSection ? `Editing Products for: ${currentToolSection}` : 'Select a section to begin'}
                 </p>
                 <button 
                   onClick={async () => {
@@ -1446,14 +1611,15 @@ const AdminDashboard = () => {
                         products: tempSelectedProducts[currentToolSection] || []
                       });
                       fetchCollections();
-                      alert(`${currentToolSection} updated successfully!`);
-                    } catch (err) { alert('Failed to update section'); }
+                      alert(`${currentToolSection} products updated successfully!`);
+                      setToolView('sections');
+                    } catch (err) { alert('Failed to update products'); }
                     finally { setLoading(false); }
                   }}
                   disabled={!currentToolSection || loading}
                   className="bg-primary text-white font-bold py-3 px-8 rounded-2xl shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all flex items-center gap-2 disabled:opacity-50 disabled:grayscale"
                 >
-                  {loading ? 'Saving...' : <><Save className="w-5 h-5" /> Save Changes</>}
+                  {loading ? 'Saving...' : <><Save className="w-5 h-5" /> Save Product Selection</>}
                 </button>
               </div>
             )}

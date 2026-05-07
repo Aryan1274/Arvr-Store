@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ProductCard = ({ product, discount }) => {
+const ProductCard = ({ product, discount, dark = false }) => {
   const productId = product._id || product.id;
   const productImage = product.images?.[0] || product.image;
   
@@ -20,7 +20,10 @@ const ProductCard = ({ product, discount }) => {
   const formatPrice = (p) => `₹${Math.round(p)}`;
 
   return (
-    <Link to={`/product/${productId}`} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden group block">
+    <Link 
+      to={`/product/${productId}`} 
+      className={`${dark ? 'bg-white/5 hover:bg-white/10' : 'bg-white hover:shadow-md'} rounded-xl shadow-sm transition-all overflow-hidden group block border ${dark ? 'border-white/5' : 'border-transparent'}`}
+    >
       <div className="relative aspect-square overflow-hidden bg-gray-100">
         {/* Discount Badge */}
         {hasDiscount && (
@@ -51,15 +54,15 @@ const ProductCard = ({ product, discount }) => {
         />
       </div>
       <div className="p-4">
-        <h3 className="text-sm font-semibold text-gray-800 line-clamp-1">{product.name}</h3>
+        <h3 className={`text-sm font-semibold line-clamp-1 ${dark ? 'text-white' : 'text-gray-800'}`}>{product.name}</h3>
         <div className="flex items-center gap-2 mt-1">
           {hasDiscount ? (
             <>
-              <p className="text-green-600 font-black text-lg">{formatPrice(finalPrice)}</p>
+              <p className={`${dark ? 'text-amber-400' : 'text-green-600'} font-black text-lg`}>{formatPrice(finalPrice)}</p>
               <p className="text-gray-400 text-xs line-through font-bold">{formatPrice(product.price)}</p>
             </>
           ) : (
-            <p className="text-primary font-bold">{formatPrice(product.price)}</p>
+            <p className={`${dark ? 'text-amber-400' : 'text-primary'} font-bold`}>{formatPrice(product.price)}</p>
           )}
         </div>
       </div>
