@@ -33,23 +33,23 @@ const DynamicSections = () => {
         const isDeal = collection.template === 'deal';
         
         return (
-          <div key={collection._id} className={`py-10 ${isOffer ? 'bg-gradient-to-br from-pink-50 via-white to-pink-50/30 rounded-[3rem] shadow-sm border border-pink-100/50 mx-4' : isDeal ? 'bg-gray-900 rounded-[3rem] shadow-2xl mx-4 text-white' : 'container mx-auto px-4'}`}>
+          <div key={collection._id} className={`py-12 ${isOffer ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-700 rounded-[3rem] shadow-xl shadow-pink-200/50 mx-4 text-white' : isDeal ? 'bg-gray-900 rounded-[3rem] shadow-2xl mx-4 text-white' : 'container mx-auto px-4'}`}>
             <div className={`container mx-auto px-6`}>
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    {isOffer && <div className="bg-pink-500 text-white p-1 rounded-lg animate-pulse"><Gift className="w-4 h-4" /></div>}
-                    {isDeal && <div className="bg-amber-500 text-white p-1 rounded-lg animate-bounce"><Zap className="w-4 h-4" /></div>}
-                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDeal ? 'text-amber-400' : 'text-primary'}`}>
+                    {isOffer && <div className="bg-white/20 backdrop-blur-sm text-white p-1.5 rounded-lg animate-pulse border border-white/30"><Gift className="w-4 h-4" /></div>}
+                    {isDeal && <div className="bg-amber-500 text-white p-1.5 rounded-lg animate-bounce"><Zap className="w-4 h-4" /></div>}
+                    <span className={`text-[10px] font-black uppercase tracking-[0.2em] ${isDeal ? 'text-amber-400' : isOffer ? 'text-rose-100' : 'text-primary'}`}>
                       {isOffer ? 'Limited Time Offer' : isDeal ? 'Flash Deal' : 'Featured Collection'}
                     </span>
                   </div>
-                  <h2 className={`text-3xl md:text-4xl font-black tracking-tight flex items-center gap-3 ${isDeal ? 'text-white' : 'text-gray-900'}`}>
+                  <h2 className={`text-3xl md:text-4xl font-black tracking-tight flex items-center gap-3 ${isDeal || isOffer ? 'text-white' : 'text-gray-900'}`}>
                     {collection.title || collection.name}
                     {!isOffer && !isDeal && <span className="text-primary">.</span>}
                   </h2>
-                  <p className={`text-sm mt-2 font-medium ${isDeal ? 'text-gray-400' : 'text-gray-500'}`}>
-                    Handpicked products for you at the best prices.
+                  <p className={`text-sm mt-2 font-medium ${isDeal ? 'text-gray-400' : isOffer ? 'text-rose-100/80' : 'text-gray-500'}`}>
+                    Exclusive discounts handpicked just for you.
                   </p>
                 </div>
                 
@@ -63,10 +63,10 @@ const DynamicSections = () => {
                   </div>
                 )}
                 
-                {!isDeal && (
+                {(isOffer || !isDeal) && (
                   <button 
                     onClick={() => window.location.href = `/collection/${collection._id}`}
-                    className={`flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 py-3 rounded-2xl transition-all ${isOffer ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
+                    className={`flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 py-3 rounded-2xl transition-all ${isOffer ? 'bg-white text-rose-600 shadow-xl shadow-rose-900/20 hover:scale-105' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                   >
                     Explore All <ChevronRight className="w-4 h-4" />
                   </button>
@@ -75,8 +75,8 @@ const DynamicSections = () => {
 
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
                 {collection.products.slice(0, 5).map((product) => (
-                  <div key={product._id} className={isDeal ? 'bg-white/5 p-2 rounded-3xl border border-white/10 hover:border-amber-500/50 transition-all' : ''}>
-                    <ProductCard product={product} discount={getProductDiscount(product._id)} dark={isDeal} />
+                  <div key={product._id} className={isDeal || isOffer ? 'bg-white/10 p-2 rounded-3xl border border-white/10 hover:border-white/30 transition-all' : ''}>
+                    <ProductCard product={product} discount={getProductDiscount(product._id)} dark={isDeal || isOffer} />
                   </div>
                 ))}
               </div>
