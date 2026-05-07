@@ -61,7 +61,7 @@ const DynamicSections = () => {
         // Only show active collections that have at least one product
         // and sort by order
         const sorted = res.data
-          .filter(c => c.isActive && c.products.length > 0)
+          .filter(c => c.isActive && (c.products.length > 0 || c.template === 'card'))
           .sort((a, b) => (a.order || 0) - (b.order || 0));
         setCollections(sorted);
       } catch (err) {

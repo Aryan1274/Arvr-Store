@@ -34,12 +34,12 @@ const Navbar = () => {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <Link to="/" className="text-2xl font-bold text-primary tracking-wider font-serif">ArVr</Link>
+          <a href="/" className="text-2xl font-bold text-primary tracking-wider font-serif">ArVr</a>
         </div>
         
         {/* Desktop Menu */}
         <div className="hidden md:flex gap-6 text-sm font-medium text-text-main/80">
-          <Link to="/" className="hover:text-primary transition-colors">Shop</Link>
+          <a href="/" className="hover:text-primary transition-colors">Shop</a>
           {categories.slice(0, 4).map(cat => (
             <Link key={cat._id} to={`/category/${cat.name.toLowerCase().replace(/ /g, '-')}`} className="hover:text-primary transition-colors">{cat.name}</Link>
           ))}
@@ -86,7 +86,7 @@ const Navbar = () => {
           </button>
         </div>
         <div className="flex flex-col p-4 gap-4 text-text-main/80 font-medium">
-          <Link to="/" onClick={toggleMenu} className="hover:text-primary py-2 border-b border-theme">Shop</Link>
+          <a href="/" onClick={toggleMenu} className="hover:text-primary py-2 border-b border-theme">Shop</a>
           {categories.map(cat => (
             <Link key={cat._id} to={`/category/${cat.name.toLowerCase().replace(/ /g, '-')}`} onClick={toggleMenu} className="hover:text-primary py-2 border-b border-theme">{cat.name}</Link>
           ))}
