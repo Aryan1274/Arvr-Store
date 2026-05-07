@@ -124,7 +124,7 @@ const DynamicSections = () => {
                     <div 
                       key={cIdx}
                       onClick={() => navigate(`/collection/${collection._id}/card/${cIdx}`)}
-                      className="min-w-[280px] md:min-w-[320px] h-[400px] relative rounded-[2.5rem] overflow-hidden group cursor-pointer snap-center shadow-xl shadow-gray-100 border border-gray-100"
+                      className="min-w-[180px] md:min-w-[220px] h-[260px] md:h-[300px] relative rounded-[2rem] overflow-hidden group cursor-pointer snap-center shadow-xl shadow-gray-100 border border-gray-100 flex-shrink-0"
                     >
                       {/* Background: Image or Golden Gradient */}
                       {card.image ? (
@@ -132,25 +132,25 @@ const DynamicSections = () => {
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-amber-300 via-amber-500 to-amber-600 flex items-center justify-center">
                           <div className="absolute inset-0 opacity-20 mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-                          <Zap className="w-20 h-20 text-white/20" />
+                          <Zap className="w-12 h-12 md:w-16 md:h-16 text-white/20" />
                         </div>
                       )}
                       
                       {/* Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
                       
-                      <div className="absolute bottom-0 left-0 right-0 p-8">
-                        <p className="text-[10px] font-black text-amber-400 uppercase tracking-[0.3em] mb-2 opacity-80">
+                      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6">
+                        <p className="text-[8px] md:text-[10px] font-black text-amber-400 uppercase tracking-[0.2em] mb-1 md:mb-2 opacity-80 line-clamp-1">
                           {card.cardType === 'price' ? `Budget Under ₹${card.priceLimit}` : 'Special Collection'}
                         </p>
-                        <h4 className="text-3xl font-black text-white leading-tight mb-6">
+                        <h4 className="text-xl md:text-2xl font-black text-white leading-tight mb-4 line-clamp-2">
                           {card.text}
                         </h4>
                         
                         {/* Hover Explore Button */}
-                        <div className="transform translate-y-12 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                          <div className="bg-white text-black font-black text-[10px] uppercase tracking-[0.2em] py-4 rounded-2xl flex items-center justify-center gap-2 shadow-2xl">
-                            Explore <ChevronRight className="w-4 h-4" />
+                        <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
+                          <div className="bg-white text-black font-black text-[8px] md:text-[10px] uppercase tracking-[0.2em] py-2.5 md:py-3 rounded-xl flex items-center justify-center gap-1 shadow-2xl">
+                            Explore <ChevronRight className="w-3 h-3 md:w-4 md:h-4" />
                           </div>
                         </div>
                       </div>
