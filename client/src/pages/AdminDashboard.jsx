@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 import api from '../api';
 import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
-import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket, Download, Eye, EyeOff, MoveUp, MoveDown, Layout, List } from 'lucide-react';
+import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket, Download, Eye, EyeOff, MoveUp, MoveDown, Layout, List, Gift, Zap } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 
 const AdminDashboard = () => {
