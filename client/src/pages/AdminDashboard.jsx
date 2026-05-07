@@ -1295,8 +1295,12 @@ const AdminDashboard = () => {
                                   {col.title || col.name}
                                   {!col.isActive && <span className="text-[8px] bg-gray-200 text-gray-500 px-1.5 py-0.5 rounded uppercase">Suspended</span>}
                                 </h5>
-                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
-                                  {col.products?.length || 0} Products • {col.template} Template
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest flex items-center gap-2">
+                                  <span>{col.products?.length || 0} Products</span>
+                                  <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                  <span className="text-primary">Position: {col.order}</span>
+                                  <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                  <span>{col.template} Template</span>
                                 </p>
                               </div>
                             </div>
@@ -1364,7 +1368,7 @@ const AdminDashboard = () => {
                             placeholder="e.g. Hot Winter Deals"
                           />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                           <div>
                             <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">UI Template</label>
                             <select 
@@ -1378,6 +1382,17 @@ const AdminDashboard = () => {
                             </select>
                           </div>
                           <div>
+                            <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Order Position</label>
+                            <input 
+                              type="number"
+                              className="w-full border-2 border-gray-100 p-4 rounded-2xl focus:ring-2 focus:ring-primary outline-none font-bold"
+                              value={collectionFormData.order}
+                              onChange={e => setCollectionFormData({ ...collectionFormData, order: parseInt(e.target.value) || 0 })}
+                              placeholder="e.g. 1"
+                            />
+                            <p className="text-[9px] text-gray-400 mt-1 font-bold">Lower numbers appear first</p>
+                          </div>
+                          <div className="col-span-2 md:col-span-1">
                             <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">Status</label>
                             <div className="flex gap-2">
                               <button 
@@ -1390,7 +1405,7 @@ const AdminDashboard = () => {
                                 onClick={() => setCollectionFormData({ ...collectionFormData, isActive: false })}
                                 className={`flex-1 p-4 rounded-2xl font-black text-xs transition-all ${!collectionFormData.isActive ? 'bg-red-500 text-white shadow-lg shadow-red-100' : 'bg-gray-100 text-gray-400'}`}
                               >
-                                Suspended
+                                Off
                               </button>
                             </div>
                           </div>
