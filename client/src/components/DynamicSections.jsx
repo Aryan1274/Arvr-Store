@@ -115,8 +115,11 @@ const DynamicSections = () => {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                {collection.products.slice(0, 5).map((product) => (
-                  <div key={product._id} className={isDeal || isOffer ? 'bg-white/10 p-2 rounded-3xl border border-white/10 hover:border-white/30 transition-all' : ''}>
+                {collection.products.slice(0, 5).map((product, pIdx) => (
+                  <div 
+                    key={product._id} 
+                    className={`${isDeal || isOffer ? 'bg-white/10 p-2 rounded-3xl border border-white/10 hover:border-white/30 transition-all' : ''} ${pIdx === 4 ? 'hidden lg:block' : ''}`}
+                  >
                     <ProductCard product={product} discount={getProductDiscount(product._id)} dark={isDeal || isOffer} />
                   </div>
                 ))}
