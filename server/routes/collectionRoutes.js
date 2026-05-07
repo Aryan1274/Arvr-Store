@@ -13,6 +13,18 @@ router.get('/', async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
+});// Get a single collection by ID
+router.get('/:id', async (req, res) => {
+  try {
+    const collection = await Collection.findById(req.params.id).populate({
+      path: 'products',
+      populate: { path: 'tags' }
+    });
+    if (!collection) return res.status(404).json({ message: 'Collection not found' });
+    res.json(collection);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // Create a new collection

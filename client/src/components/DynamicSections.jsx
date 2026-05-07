@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import api from '../api';
 import ProductCard from './ProductCard';
 import { useCoupons } from '../context/CouponContext';
@@ -51,6 +52,7 @@ const DynamicSections = () => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const { getProductDiscount } = useCoupons();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCollections = async () => {
@@ -104,7 +106,7 @@ const DynamicSections = () => {
                 
                 {(isOffer || !isDeal) && (
                   <button 
-                    onClick={() => window.location.href = `/collection/${collection._id}`}
+                    onClick={() => navigate(`/collection/${collection._id}`)}
                     className={`flex items-center gap-2 font-black text-xs uppercase tracking-widest px-6 py-3 rounded-2xl transition-all ${isOffer ? 'bg-white text-rose-600 shadow-xl shadow-rose-900/20 hover:scale-105' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'}`}
                   >
                     Explore All <ChevronRight className="w-4 h-4" />
@@ -123,7 +125,7 @@ const DynamicSections = () => {
               {isDeal && (
                 <div className="mt-10 text-center border-t border-white/10 pt-8">
                   <button 
-                    onClick={() => window.location.href = `/collection/${collection._id}`}
+                    onClick={() => navigate(`/collection/${collection._id}`)}
                     className="inline-flex items-center gap-3 bg-amber-500 text-black font-black text-sm uppercase tracking-widest px-10 py-4 rounded-full hover:bg-amber-400 transition-all shadow-xl shadow-amber-500/20 active:scale-95"
                   >
                     View All Flash Deals <ChevronRight className="w-5 h-5" />

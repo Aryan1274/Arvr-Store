@@ -12,6 +12,7 @@ import Login from './pages/Login';
 import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import SearchResults from './pages/SearchResults';
+import CollectionDetail from './pages/CollectionDetail';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -39,6 +40,7 @@ function App() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/search" element={<SearchResults />} />
+              <Route path="/collection/:id" element={<CollectionDetail />} />
             </Routes>
           </main>
           <Footer />
