@@ -53,15 +53,15 @@ const ProductCard = ({ product, discount, dark = false }) => {
         />
       </div>
       <div className="p-3 lg:p-5">
-        <h3 className={`text-sm lg:text-base font-semibold line-clamp-1 ${dark ? 'text-white' : 'text-gray-800'}`}>{product.name}</h3>
+        <h3 className={`text-sm lg:text-base xl:text-lg font-semibold line-clamp-1 ${dark ? 'text-white' : 'text-gray-800'}`}>{product.name}</h3>
         <div className="flex items-center gap-2 mt-1">
           {hasDiscount ? (
             <>
-              <p className={`${dark ? 'text-amber-400' : 'text-green-600'} font-black text-lg lg:text-xl`}>{formatPrice(finalPrice)}</p>
-              <p className="text-gray-400 text-xs lg:text-sm line-through font-bold">{formatPrice(product.price)}</p>
+              <p className={`${dark ? 'text-amber-400' : 'text-green-600'} font-black text-lg lg:text-xl xl:text-2xl`}>{formatPrice(finalPrice)}</p>
+              <p className="text-gray-400 text-xs lg:text-sm xl:text-base line-through font-bold">{formatPrice(product.price)}</p>
             </>
           ) : (
-            <p className={`${dark ? 'text-amber-400' : 'text-primary'} font-bold lg:text-lg`}>{formatPrice(product.price)}</p>
+            <p className={`${dark ? 'text-amber-400' : 'text-primary'} font-bold lg:text-lg xl:text-xl`}>{formatPrice(product.price)}</p>
           )}
         </div>
       </div>

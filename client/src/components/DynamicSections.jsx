@@ -83,8 +83,8 @@ const DynamicSections = () => {
         const isCard = collection.template === 'card';
         
         return (
-          <div key={collection._id} className={`${isOffer || isDeal ? 'py-12 lg:py-20' : isCard ? 'py-10 lg:py-16' : 'py-4 lg:py-8'} ${isOffer ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-700 rounded-[3rem] shadow-xl shadow-pink-200/50 mx-4 lg:mx-10 xl:mx-14 text-white' : isDeal ? 'bg-gray-900 rounded-[3rem] shadow-2xl mx-4 lg:mx-10 xl:mx-14 text-white' : isCard ? 'bg-white rounded-[3rem] shadow-sm border border-gray-100 mx-4 lg:mx-10 xl:mx-14' : 'px-4 lg:px-10 xl:px-14'}`}>
-            <div className="container mx-auto px-6 lg:px-10">
+          <div key={collection._id} className={`${isOffer || isDeal ? 'py-12 lg:py-20 xl:py-24' : isCard ? 'py-10 lg:py-16' : 'py-4'} ${isOffer ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-700 rounded-[3rem] lg:rounded-[4rem] shadow-xl shadow-pink-200/50 mx-4 lg:mx-10 xl:mx-14 text-white' : isDeal ? 'bg-gray-900 rounded-[3rem] lg:rounded-[4rem] shadow-2xl mx-4 lg:mx-10 xl:mx-14 text-white' : isCard ? 'bg-white rounded-[3rem] lg:rounded-[4rem] shadow-sm border border-gray-100 mx-4 lg:mx-10 xl:mx-14' : 'w-full px-4 lg:px-10 xl:px-14'}`}>
+            <div className="w-full px-6 lg:px-10 xl:px-14">
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 lg:mb-12 gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
@@ -100,7 +100,7 @@ const DynamicSections = () => {
                   <h2 className={`text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black tracking-tight flex items-center gap-3 ${isDeal || isOffer ? 'text-white' : 'text-gray-900'}`}>
                     {collection.title || collection.name}
                   </h2>
-                  <p className={`text-sm lg:text-base mt-2 font-medium ${isDeal ? 'text-gray-400' : isOffer ? 'text-rose-100/80' : 'text-gray-500'}`}>
+                  <p className={`text-sm lg:text-base xl:text-lg mt-2 lg:mt-4 font-medium ${isDeal ? 'text-gray-400' : isOffer ? 'text-rose-100/80' : 'text-gray-500'}`}>
                     {isCard ? 'Premium deals curated specifically for your budget.' : 'Exclusive discounts handpicked just for you.'}
                   </p>
                 </div>
@@ -159,11 +159,11 @@ const DynamicSections = () => {
                 </div>
               ) : (
                 /* DEFAULT GRID */
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6 xl:gap-8">
-                  {collection.products.slice(0, 5).map((product, pIdx) => (
+                <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6 xl:gap-8">
+                  {collection.products.slice(0, 6).map((product, pIdx) => (
                     <div 
                       key={product._id} 
-                      className={`${isDeal || isOffer ? 'bg-white/10 p-2 lg:p-3 rounded-3xl border border-white/10 hover:border-white/30 transition-all' : ''} ${pIdx === 4 ? 'hidden lg:block' : ''}`}
+                      className={`${isDeal || isOffer ? 'bg-white/10 p-2 rounded-3xl border border-white/10 hover:border-white/30 transition-all' : ''} ${pIdx === 5 ? 'hidden xl:block' : pIdx === 4 ? 'hidden lg:block' : ''}`}
                     >
                       <ProductCard product={product} discount={getProductDiscount(product._id)} dark={isDeal || isOffer} />
                     </div>

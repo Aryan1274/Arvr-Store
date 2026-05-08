@@ -22,7 +22,7 @@ const Home = () => {
 
   return (
     <div className="bg-bg-main min-h-screen">
-      <div className="max-w-7xl mx-auto pt-4 lg:pt-10 xl:pt-12">
+      <div className="max-w-[1600px] mx-auto pt-4 lg:pt-10 xl:pt-12">
         {/* User Greeting */}
         <div className="px-4 lg:px-10 xl:px-14 mb-4 lg:mb-8 flex justify-between items-center">
           <div className="flex items-center gap-3 lg:gap-5">
