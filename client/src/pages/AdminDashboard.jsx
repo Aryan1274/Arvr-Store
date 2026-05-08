@@ -392,9 +392,9 @@ const AdminDashboard = () => {
   }, {});
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl flex flex-col md:flex-row gap-8">
+    <div className="w-full mx-auto px-4 lg:px-12 xl:px-20 2xl:px-32 py-8 flex flex-col md:flex-row gap-8">
       {/* Navigation (Sidebar on Desktop, Horizontal Scroll on Mobile) */}
-      <div className="w-full md:w-1/4">
+      <div className="w-full md:w-[280px] flex-shrink-0">
         <div className="bg-bg-card rounded-2xl shadow-sm border border-theme p-2 md:p-4 md:sticky md:top-24">
           <h2 className="text-lg md:text-xl font-bold text-text-main mb-4 md:mb-6 px-2 hidden md:block">Admin Control</h2>
           <div className="flex md:flex-col gap-2 overflow-x-auto md:overflow-visible pb-2 md:pb-0 hide-scrollbar">
@@ -447,26 +447,26 @@ const AdminDashboard = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="border-b text-gray-400 text-xs">
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Order ID</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Customer</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Email</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Address</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Amount</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Payment</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Status</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider">Coupon</th>
-                    <th className="py-4 px-2 font-medium uppercase tracking-wider text-right">Actions</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Order ID</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Customer</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Email</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Address</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Amount</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Payment</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Status</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider">Coupon</th>
+                    <th className="py-4 px-4 font-medium uppercase tracking-wider text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
                   {Array.isArray(orders) && orders.map(order => (
                     <tr key={order._id} className="border-b hover:bg-gray-50 transition-colors">
-                      <td className="py-4 px-2 text-xs font-mono text-gray-500">{order._id?.slice(-6)}</td>
-                      <td className="py-4 px-2">
+                      <td className="py-4 px-4 text-xs font-mono text-gray-500">{order._id?.slice(-6)}</td>
+                      <td className="py-4 px-4">
                         <div className="font-bold text-gray-800 text-sm">{order.user?.name || order.address?.name || 'Guest'}</div>
                         <div className="mt-2 space-y-1">
                           {order.products.map((item, idx) => (
-                            <div key={idx} className="text-[10px] bg-gray-50 p-1.5 rounded border border-gray-100 max-w-[140px]">
+                            <div key={idx} className="text-[10px] bg-gray-50 p-1.5 rounded border border-gray-100 max-w-[200px]">
                               <div className="font-bold text-gray-600 truncate">{item.product?.name || 'Deleted Product'} <span className="text-primary">x{item.quantity}</span></div>
                               {item.selectedOptions && (Object.values(item.selectedOptions).some(v => v)) && (
                                 <div className="text-[9px] text-primary font-bold flex flex-wrap gap-x-2 mt-0.5 uppercase tracking-tighter">
@@ -479,8 +479,8 @@ const AdminDashboard = () => {
                           ))}
                         </div>
                       </td>
-                      <td className="py-4 px-2 text-[11px] text-gray-500 max-w-[120px] break-all">{order.address?.email || order.user?.email || 'N/A'}</td>
-                      <td className="py-4 px-2 text-[11px] text-gray-600 max-w-[160px] break-words">
+                      <td className="py-4 px-4 text-[11px] text-gray-500 max-w-[200px] break-all">{order.address?.email || order.user?.email || 'N/A'}</td>
+                      <td className="py-4 px-4 text-[11px] text-gray-600 max-w-[300px] break-words">
                         {order.address ? (
                           <>
                             {order.address.addressLine}, {order.address.city}, {order.address.state} - {order.address.pincode}
@@ -488,9 +488,9 @@ const AdminDashboard = () => {
                           </>
                         ) : 'N/A'}
                       </td>
-                      <td className="py-4 px-2 font-bold text-primary text-sm">₹{order.totalPrice}</td>
-                      <td className="py-4 px-2 text-xs">{order.paymentType}</td>
-                      <td className="py-4 px-2">
+                      <td className="py-4 px-4 font-bold text-primary text-sm">₹{order.totalPrice}</td>
+                      <td className="py-4 px-4 text-xs">{order.paymentType}</td>
+                      <td className="py-4 px-4">
                         <select 
                           value={order.status} 
                           onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
@@ -503,7 +503,7 @@ const AdminDashboard = () => {
                           <option>Failed</option>
                         </select>
                       </td>
-                      <td className="py-4 px-2">
+                      <td className="py-4 px-4">
                         {order.couponCode ? (
                           <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded text-[10px] font-black uppercase max-w-[60px] truncate block">
                             {order.couponCode}
@@ -512,7 +512,7 @@ const AdminDashboard = () => {
                           <span className="text-gray-300 text-[10px]">—</span>
                         )}
                       </td>
-                      <td className="py-4 px-2 text-right">
+                      <td className="py-4 px-4 text-right">
                         <div className="flex justify-end items-center gap-2">
                           <button 
                             onClick={() => handleDownloadInvoice(order)}
@@ -638,7 +638,7 @@ const AdminDashboard = () => {
             )}
 
             {/* Category Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9 gap-6 p-4">
               {Array.isArray(categories) && categories.map(cat => (
                 <div key={cat._id} className="flex flex-col items-center gap-3 relative group">
                   <input 
@@ -751,7 +751,7 @@ const AdminDashboard = () => {
               </div>
             )}
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6 p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-7 2xl:grid-cols-9 gap-6 p-4">
               {Array.isArray(tags) && tags.map(tag => (
                 <div key={tag._id} className="flex flex-col items-center gap-3 relative group">
                   <input 
@@ -1013,7 +1013,7 @@ const AdminDashboard = () => {
                   <ImageIcon className="w-10 h-10 text-gray-200" />
                 </div>
                 <h4 className="text-xl font-bold text-gray-800 mb-2">No products found</h4>
-                <p className="text-gray-500 max-w-xs mx-auto mb-6">Start by adding your first product or try adjusting your category filters.</p>
+                <p className="text-gray-500 max-w-md mx-auto mb-6">Start by adding your first product or try adjusting your category filters.</p>
                 <button onClick={() => setIsFormOpen(true)} className="bg-gray-800 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-black transition-all">Add New Product</button>
               </div>
             )}
@@ -1145,7 +1145,7 @@ const AdminDashboard = () => {
       {/* Delivery Date Modal */}
       {isDatePickerOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl animate-in zoom-in duration-300">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in zoom-in duration-300">
             <div className="flex justify-between items-center mb-6">
               <h4 className="text-xl font-bold text-gray-800">Set Delivery Date</h4>
               <button onClick={() => setIsDatePickerOpen(false)} className="p-2 hover:bg-gray-100 rounded-full text-gray-400"><X className="w-5 h-5" /></button>
@@ -1183,7 +1183,7 @@ const AdminDashboard = () => {
       {/* Tools Modal (Collections & Coupons) */}
       {isToolsOpen && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-2xl h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in duration-300">
+          <div className="bg-white rounded-3xl w-full max-w-4xl h-[80vh] flex flex-col shadow-2xl overflow-hidden animate-in zoom-in duration-300">
             
             {/* Modal Header */}
             <div className="p-6 border-b flex items-center justify-between bg-gray-50/50">
@@ -1820,7 +1820,7 @@ const AdminDashboard = () => {
       {/* Variant Modal */}
       {isVariantModalOpen && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+          <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
             {/* Modal Header */}
             <div className="bg-gray-50 px-8 py-6 border-b flex justify-between items-center">
               <div>
