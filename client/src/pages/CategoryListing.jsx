@@ -34,8 +34,8 @@ const CategoryListing = () => {
   }, [id]);
   
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl min-h-[60vh]">
-      <h1 className="text-3xl font-bold text-text-main mb-8 capitalize text-center border-b border-theme pb-4">
+    <div className="container mx-auto px-4 lg:px-10 xl:px-14 py-8 lg:py-12 max-w-7xl min-h-[60vh]">
+      <h1 className="text-3xl lg:text-5xl xl:text-6xl font-bold text-text-main mb-8 lg:mb-12 capitalize text-center border-b border-theme pb-4 lg:pb-6">
         {formatCategoryName(id).toLowerCase().includes('collection') 
           ? formatCategoryName(id) 
           : `${formatCategoryName(id)} Collection`}
@@ -46,14 +46,14 @@ const CategoryListing = () => {
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
         </div>
       ) : products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 lg:gap-6 xl:gap-8">
           {products.map((product) => (
             <ProductCard key={product._id} product={product} discount={getProductDiscount(product._id)} />
           ))}
         </div>
       ) : (
         <div className="text-center py-20 bg-bg-card rounded-2xl shadow-sm border border-theme">
-          <p className="text-text-muted text-lg">No products found in this category yet.</p>
+          <p className="text-text-muted text-lg lg:text-xl">No products found in this category yet.</p>
         </div>
       )}
     </div>

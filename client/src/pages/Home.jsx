@@ -22,11 +22,11 @@ const Home = () => {
 
   return (
     <div className="bg-bg-main min-h-screen">
-      <div className="max-w-7xl mx-auto pt-4">
+      <div className="max-w-7xl mx-auto pt-4 lg:pt-10 xl:pt-12">
         {/* User Greeting */}
-        <div className="px-4 mb-4 flex justify-between items-center">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full overflow-hidden bg-bg-card border border-theme shadow-sm flex items-center justify-center">
+        <div className="px-4 lg:px-10 xl:px-14 mb-4 lg:mb-8 flex justify-between items-center">
+          <div className="flex items-center gap-3 lg:gap-5">
+            <div className="w-12 h-12 lg:w-[72px] lg:h-[72px] rounded-full overflow-hidden bg-bg-card border border-theme shadow-sm flex items-center justify-center">
               {user?.avatar ? (
                 <img 
                   src={user.avatar} 
@@ -34,12 +34,12 @@ const Home = () => {
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <User className="w-6 h-6 text-text-muted" />
+                <User className="w-6 h-6 lg:w-9 lg:h-9 text-text-muted" />
               )}
             </div>
             <div>
-              <p className="text-sm text-text-muted font-medium">Hello,</p>
-              <p className="text-sm font-bold text-text-main truncate max-w-[200px]">
+              <p className="text-sm lg:text-base xl:text-lg text-text-muted font-medium">Hello,</p>
+              <p className="text-sm lg:text-lg xl:text-xl font-bold text-text-main truncate max-w-[200px] lg:max-w-[480px]">
                 {user ? user.email : 'Guest User'}
               </p>
             </div>
@@ -47,20 +47,20 @@ const Home = () => {
         </div>
 
         {/* Search Bar */}
-        <div className="px-4 mb-6">
-          <div className="flex items-center bg-bg-card rounded-full px-4 py-3 shadow-sm border border-theme focus-within:ring-2 focus-within:ring-primary/20 transition-all">
-            <Search className="w-5 h-5 text-text-muted mr-2" />
+        <div className="px-4 lg:px-10 xl:px-14 mb-6 lg:mb-10">
+          <div className="flex items-center bg-bg-card rounded-full px-4 lg:px-8 py-3 lg:py-5 shadow-sm lg:shadow-md border border-theme focus-within:ring-2 focus-within:ring-primary/20 transition-all lg:max-w-3xl xl:max-w-4xl">
+            <Search className="w-5 h-5 lg:w-6 lg:h-6 xl:w-7 xl:h-7 text-text-muted mr-2 lg:mr-3 flex-shrink-0" />
             <input 
               type="text" 
               placeholder="Search by Keyword, Category or Tag" 
-              className="bg-transparent border-none outline-none text-sm w-full text-text-main/80 font-medium"
+              className="bg-transparent border-none outline-none text-sm lg:text-base xl:text-lg w-full text-text-main/80 font-medium"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               onKeyDown={handleSearch}
             />
-            <div className="flex items-center gap-3 border-l pl-3 ml-2 border-theme">
-              <Mic className="w-5 h-5 text-text-muted cursor-pointer hover:text-primary transition-colors" />
-              <Camera className="w-5 h-5 text-text-muted cursor-pointer hover:text-primary transition-colors" />
+            <div className="flex items-center gap-3 lg:gap-4 border-l pl-3 ml-2 border-theme">
+              <Mic className="w-5 h-5 lg:w-6 lg:h-6 text-text-muted cursor-pointer hover:text-primary transition-colors" />
+              <Camera className="w-5 h-5 lg:w-6 lg:h-6 text-text-muted cursor-pointer hover:text-primary transition-colors" />
             </div>
           </div>
         </div>

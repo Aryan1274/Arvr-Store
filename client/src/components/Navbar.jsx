@@ -25,8 +25,8 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
   return (
-    <nav className="bg-bg-card shadow-sm p-4 sticky top-0 z-50">
-      <div className="container mx-auto flex justify-between items-center">
+    <nav className="bg-bg-card shadow-sm py-3 lg:py-4 px-2 lg:px-6 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
         <div className="flex items-center gap-4">
           <button 
             className="md:hidden text-text-main/80 p-1 hover:bg-primary-light rounded-md"
@@ -34,11 +34,11 @@ const Navbar = () => {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <a href="/" className="text-2xl font-bold text-primary tracking-wider font-serif">ArVr</a>
+          <a href="/" className="text-2xl lg:text-3xl xl:text-4xl font-bold text-primary tracking-wider font-serif">ArVr</a>
         </div>
         
         {/* Desktop Menu */}
-        <div className="hidden md:flex gap-6 text-sm font-medium text-text-main/80">
+        <div className="hidden md:flex gap-6 lg:gap-8 xl:gap-10 text-sm lg:text-base font-medium text-text-main/80">
           <a href="/" className="hover:text-primary transition-colors">Shop</a>
           {categories.slice(0, 4).map(cat => (
             <Link key={cat._id} to={`/category/${cat.name.toLowerCase().replace(/ /g, '-')}`} className="hover:text-primary transition-colors">{cat.name}</Link>
@@ -49,17 +49,17 @@ const Navbar = () => {
           )}
         </div>
  
-        <div className="flex items-center gap-4 text-text-main/80">
+        <div className="flex items-center gap-4 lg:gap-5 text-text-main/80">
           {user?.role === 'admin' && (
             <Link to="/admin" className="md:hidden hover:text-primary transition-colors p-1 rounded-full hover:bg-primary-light" title="Admin Panel">
               <ShieldCheck className="w-6 h-6 text-primary" />
             </Link>
           )}
           <Link to="/profile" className="hover:text-primary transition-colors p-1 rounded-full hover:bg-primary-light">
-            <User className="w-6 h-6" />
+            <User className="w-6 h-6 lg:w-7 lg:h-7" />
           </Link>
           <Link to="/cart" className="hover:text-primary transition-colors relative p-1 rounded-full hover:bg-gray-100">
-            <ShoppingBag className="w-6 h-6" />
+            <ShoppingBag className="w-6 h-6 lg:w-7 lg:h-7" />
             {cartItemCount > 0 && (
               <span className="absolute top-0 right-0 bg-[#a78bfa] text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center border-2 border-white font-bold">
                 {cartItemCount}
