@@ -161,5 +161,34 @@ const sendOrderStatusUpdateEmail = async (order) => {
   }
 };
 
-module.exports = { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail };
+const sendContactEmail = async (contactData) => {
+  const { email, message, name } = contactData;
+
+  const mailOptions = {
+    to: process.env.EMAIL_USER, // Send to admin
+    subject: `New Contact Message from ${name || email}`,
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #f0f0f0; border-radius: 12px; overflow: hidden;">
+        <div style="background-color: #333; padding: 20px; text-align: center;">
+          <h1 style="color: white; margin: 0;">New Contact Message</h1>
+        </div>
+        <div style="padding: 30px;">
+          <p style="color: #555;">You received a new message from your website contact form:</p>
+          
+          <div style="margin: 20px 0; background-color: #f9f9f9; padding: 20px; border-radius: 12px; border-left: 4px solid #f472b6;">
+            <p style="margin: 0 0 10px 0;"><strong>From:</strong> ${name || 'N/A'} (${email})</p>
+            <p style="margin: 0;"><strong>Message:</strong></p>
+            <p style="margin: 10px 0 0 0; white-space: pre-wrap; color: #333; line-height: 1.6;">${message}</p>
+          </div>
+          
+          <p style="color: #999; font-size: 12px;">Sent via ArVr Store Contact Form</p>
+        </div>
+      </div>
+    `
+  };
+
+  await sendEmailViaAPI(mailOptions);
+};
+
+module.exports = { sendOrderConfirmationEmail, sendOrderStatusUpdateEmail, sendContactEmail };
 

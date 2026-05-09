@@ -13,6 +13,9 @@ import Profile from './pages/Profile';
 import AdminDashboard from './pages/AdminDashboard';
 import SearchResults from './pages/SearchResults';
 import CollectionDetail from './pages/CollectionDetail';
+import Contact from './pages/Contact';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsConditions from './pages/TermsConditions';
 import { CartProvider } from './context/CartContext';
 import { AuthProvider } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
@@ -42,6 +45,9 @@ function App() {
               <Route path="/search" element={<SearchResults />} />
               <Route path="/collection/:id" element={<CollectionDetail />} />
               <Route path="/collection/:id/card/:cardIndex" element={<CollectionDetail />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/terms" element={<TermsConditions />} />
             </Routes>
           </main>
           <Footer />
