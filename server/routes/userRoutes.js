@@ -12,11 +12,15 @@ router.get('/', async (req, res) => {
   }
 });
 
-// DELETE user
-router.get('/delete/:id', async (req, res) => {
+// UPDATE user profile
+router.put('/:id', async (req, res) => {
   try {
-    await User.findByIdAndDelete(req.params.id);
-    res.json({ message: 'User deleted successfully' });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      { $set: req.body },
+      { new: true }
+    );
+    res.json(updatedUser);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

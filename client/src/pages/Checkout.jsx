@@ -19,7 +19,14 @@ const Checkout = () => {
   const [availableCoupons, setAvailableCoupons] = useState([]);
 
   const [formData, setFormData] = useState({
-    name: user?.name || '', mobile: '', email: user?.email || '', addressLine: '', landmark: '', pincode: '', city: '', state: ''
+    name: user?.address?.name || user?.name || '',
+    mobile: user?.address?.mobile || '',
+    email: user?.address?.email || user?.email || '',
+    addressLine: user?.address?.addressLine || '',
+    landmark: user?.address?.landmark || '',
+    pincode: user?.address?.pincode || '',
+    city: user?.address?.city || '',
+    state: user?.address?.state || ''
   });
 
   useEffect(() => {
@@ -32,6 +39,21 @@ const Checkout = () => {
     };
     fetchCoupons();
   }, []);
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.address?.name || user.name || '',
+        mobile: user.address?.mobile || '',
+        email: user.address?.email || user.email || '',
+        addressLine: user.address?.addressLine || '',
+        landmark: user.address?.landmark || '',
+        pincode: user.address?.pincode || '',
+        city: user.address?.city || '',
+        state: user.address?.state || ''
+      });
+    }
+  }, [user]);
 
   const fetchPaymentSettings = async () => {
     try {

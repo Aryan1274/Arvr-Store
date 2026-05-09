@@ -10,12 +10,35 @@ const Profile = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('active');
+  const [addressForm, setAddressForm] = useState({
+    name: user?.address?.name || user?.name || '',
+    mobile: user?.address?.mobile || '',
+    addressLine: user?.address?.addressLine || '',
+    landmark: user?.address?.landmark || '',
+    pincode: user?.address?.pincode || '',
+    city: user?.address?.city || '',
+    state: user?.address?.state || ''
+  });
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     if (user?._id) {
       fetchOrders();
     }
   }, [user]);
+
+  const handleAddressUpdate = async (e) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await api.put(`/api/users/${user._id}`, { address: addressForm });
+      alert('Address saved successfully! It will now be pre-filled at checkout.');
+    } catch (err) {
+      alert('Failed to save address');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const fetchOrders = async () => {
     try {
@@ -125,6 +148,12 @@ const Profile = () => {
           >
             Order History
           </button>
+          <button 
+            onClick={() => setActiveTab('address')}
+            className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'address' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
+          >
+            Saved Address
+          </button>
         </div>
 
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -149,6 +178,106 @@ const Profile = () => {
                 <p className="text-gray-400 font-bold text-lg">Your order history is empty.</p>
               </div>
             )
+          ) : (
+            <div className="bg-white p-6 md:p-8 rounded-3xl border shadow-sm">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-3 bg-pink-50 rounded-2xl text-primary">
+                  <Package className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-gray-800">Saved Address</h3>
+                  <p className="text-xs text-gray-400 font-bold uppercase tracking-widest">This will be auto-filled during checkout</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleAddressUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Full Name</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={addressForm.name}
+                    onChange={(e) => setAddressForm({...addressForm, name: e.target.value})}
+                    className="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
+                    placeholder="Enter full name"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Mobile Number</label>
+                  <input 
+                    type="tel" 
+                    required
+                    value={addressForm.mobile}
+                    onChange={(e) => setAddressForm({...addressForm, mobile: e.target.value})}
+                    className="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
+                    placeholder="10-digit mobile number"
+                  />
+                </div>
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Address Line</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={addressForm.addressLine}
+                    onChange={(e) => setAddressForm({...addressForm, addressLine: e.target.value})}
+                    className="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
+                    placeholder="House/Flat No., Building, Street"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Landmark</label>
+                  <input 
+                    type="text" 
+                    value={addressForm.landmark}
+                    onChange={(e) => setAddressForm({...addressForm, landmark: e.target.value})}
+                    className="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
+                    placeholder="E.g. Near Apollo Hospital"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">Pincode</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={addressForm.pincode}
+                    onChange={(e) => setAddressForm({...addressForm, pincode: e.target.value})}
+                    className="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
+                    placeholder="6-digit pincode"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">City</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={addressForm.city}
+                    onChange={(e) => setAddressForm({...addressForm, city: e.target.value})}
+                    className="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
+                    placeholder="Enter city"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-gray-400 uppercase tracking-widest ml-1">State</label>
+                  <input 
+                    type="text" 
+                    required
+                    value={addressForm.state}
+                    onChange={(e) => setAddressForm({...addressForm, state: e.target.value})}
+                    className="w-full border-2 border-gray-50 p-4 rounded-2xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all font-medium" 
+                    placeholder="Enter state"
+                  />
+                </div>
+                <div className="md:col-span-2 pt-4">
+                  <button 
+                    type="submit"
+                    disabled={saving}
+                    className="w-full md:w-auto px-10 py-4 bg-primary text-white rounded-2xl font-black uppercase text-xs tracking-widest shadow-lg shadow-pink-100 hover:bg-pink-500 hover:-translate-y-0.5 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    {saving ? 'Saving...' : <><CheckCircle2 className="w-4 h-4" /> Save Address</>}
+                  </button>
+                </div>
+              </form>
+            </div>
           )}
         </div>
       </div>
