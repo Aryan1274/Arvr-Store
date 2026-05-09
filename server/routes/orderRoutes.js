@@ -23,7 +23,7 @@ router.post('/create', async (req, res) => {
       totalPrice,
       paymentType,
       address,
-      status: paymentType === 'COD' ? 'Processing' : 'Pending'
+      status: paymentType === 'COD' ? 'Processing' : (paymentType === 'WhatsApp' ? 'Under Verification' : 'Pending')
     });
 
     const savedOrder = await newOrder.save();
@@ -34,6 +34,11 @@ router.post('/create', async (req, res) => {
     if (paymentType === 'COD') {
       // Send email in background to prevent hanging the response
       sendOrderConfirmationEmail(populatedOrder).catch(err => console.error('Background email error:', err));
+      return res.status(201).json({ success: true, order: savedOrder });
+    }
+
+    if (paymentType === 'WhatsApp') {
+      // Skip email for WhatsApp orders until admin verifies
       return res.status(201).json({ success: true, order: savedOrder });
     }
 
@@ -119,7 +124,14 @@ router.put('/:id/status', async (req, res) => {
     );
     
     if (order) {
-      await sendOrderStatusUpdateEmail(order);
+      // If a WhatsApp order is changed from 'Under Verification' to something else, send confirmation email
+      // Or if it's explicitly set to 'Processing' or 'Dispatched'
+      if (status === 'Processing' || status === 'Dispatched') {
+        const populated = await Order.findById(order._id).populate('products.product');
+        await sendOrderConfirmationEmail(populated).catch(e => console.error(e));
+      } else {
+        await sendOrderStatusUpdateEmail(order);
+      }
     }
     
     res.json(order);

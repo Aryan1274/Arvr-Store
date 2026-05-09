@@ -133,6 +133,49 @@ const Checkout = () => {
     rzp1.open();
   };
 
+  const generateWhatsAppMessage = (orderData) => {
+    const productsList = cart.map((item, index) => {
+      const itemPrice = parseFloat(String(item.price).replace('₹', ''));
+      const productUrl = `${window.location.origin}/product/${item._id || item.id}`;
+      let specs = '';
+      if (item.selectedOptions.size) specs += `Size: ${item.selectedOptions.size}, `;
+      if (item.selectedOptions.color) specs += `Color: ${item.selectedOptions.color}, `;
+      if (item.selectedOptions.custom) specs += `${item.selectedOptions.custom}`;
+      
+      return `*Product ${index + 1}:* ${item.name}
+*ID:* ${item._id || item.id}
+*Price:* ₹${itemPrice}
+*Qty:* ${item.quantity}
+*Specs:* ${specs || 'None'}
+*Link:* ${productUrl}
+-------------------`;
+    }).join('\n');
+
+    const message = `*NEW ORDER REQUEST (WhatsApp)*
+
+*🛒 ORDER DETAILS:*
+${productsList}
+
+*💰 BILLING SUMMARY:*
+*Subtotal:* ₹${(calculateDiscountedTotal() - getShippingTotal()).toFixed(2)}
+*Shipping:* ₹${getShippingTotal().toFixed(2)}
+*TOTAL AMOUNT:* ₹${calculateDiscountedTotal().toFixed(2)}
+
+*📍 SHIPPING ADDRESS:*
+*Name:* ${formData.name}
+*Mobile:* ${formData.mobile}
+*Email:* ${formData.email}
+*Address:* ${formData.addressLine}
+*Landmark:* ${formData.landmark || 'N/A'}
+*Pincode:* ${formData.pincode}
+*City:* ${formData.city}
+*State:* ${formData.state}
+
+_Please verify and confirm my order._`;
+
+    return encodeURIComponent(message);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -168,6 +211,11 @@ const Checkout = () => {
         } else {
           navigate('/');
         }
+      } else if (paymentMethod === 'WhatsApp') {
+        const waLink = `https://wa.me/9592881227?text=${generateWhatsAppMessage()}`;
+        window.open(waLink, '_blank');
+        clearCart();
+        navigate(user ? '/profile' : '/');
       } else {
         handleRazorpayPayment(res.data);
       }
@@ -260,6 +308,13 @@ const Checkout = () => {
                 <input type="radio" name="payment" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} className="w-4 h-4 text-primary" />
                 <span className="font-medium text-gray-700">Cash on Delivery (COD)</span>
               </label>
+              <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-green-50 border-green-100 bg-green-50/20">
+                <input type="radio" name="payment" value="WhatsApp" checked={paymentMethod === 'WhatsApp'} onChange={() => setPaymentMethod('WhatsApp')} className="w-4 h-4 text-green-600" />
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-green-700">Order on WhatsApp</span>
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" className="w-4 h-4" />
+                </div>
+              </label>
             </div>
           </div>
         </div>
@@ -312,8 +367,14 @@ const Checkout = () => {
               <span>Total to Pay</span>
               <span>₹{calculateDiscountedTotal().toFixed(2)}</span>
             </div>
-            <button disabled={loading} type="submit" className="w-full bg-primary hover:bg-pink-500 text-white font-bold py-3 rounded-full shadow-md transition-transform transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed">
-              {loading ? 'Processing...' : (paymentMethod === 'COD' ? 'Place Order (COD)' : 'Pay securely with Razorpay')}
+            <button disabled={loading} type="submit" className={`w-full font-bold py-4 rounded-full shadow-md transition-all transform hover:scale-[1.02] active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 ${paymentMethod === 'WhatsApp' ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-primary hover:bg-pink-500 text-white'}`}>
+              {loading ? 'Processing...' : (
+                paymentMethod === 'WhatsApp' ? (
+                  <><img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" className="w-5 h-5 invert brightness-0" alt="" /> Place Order on WhatsApp</>
+                ) : (
+                  paymentMethod === 'COD' ? 'Place Order (COD)' : 'Pay securely with Razorpay'
+                )
+              )}
             </button>
           </div>
         </div>

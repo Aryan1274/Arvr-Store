@@ -48,11 +48,18 @@ const Profile = () => {
           <div>
             <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Order #{order._id.slice(-6)}</p>
             <p className="text-sm font-bold text-gray-800">{new Date(order.createdAt).toLocaleDateString()}</p>
+            {order.paymentType === 'WhatsApp' && (
+              <div className="mt-1 flex items-center gap-1 text-[8px] font-black uppercase text-green-600 bg-green-50 px-1.5 py-0.5 rounded border border-green-100 w-fit">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="" className="w-2.5 h-2.5" />
+                Ordered on WhatsApp
+              </div>
+            )}
           </div>
         </div>
         <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${
           order.status === 'Processing' ? 'bg-blue-50 text-blue-600' :
           order.status === 'Delivered' ? 'bg-green-50 text-green-600' :
+          order.status === 'Under Verification' ? 'bg-amber-100 text-amber-700 animate-pulse' :
           'bg-amber-50 text-amber-600'
         }`}>
           {order.status}

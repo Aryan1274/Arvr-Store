@@ -14,9 +14,9 @@ const orderSchema = new mongoose.Schema({
   subTotal: { type: Number, required: true },
   shippingCharges: { type: Number, required: true, default: 49 },
   totalPrice: { type: Number, required: true },
-  status: { type: String, enum: ['Pending', 'Processing', 'Dispatched', 'Delivered'], default: 'Pending' },
+  status: { type: String, enum: ['Pending', 'Processing', 'Dispatched', 'Delivered', 'Under Verification'], default: 'Pending' },
   deliveryDate: { type: Date },
-  paymentType: { type: String, enum: ['COD', 'Online'], required: true },
+  paymentType: { type: String, enum: ['COD', 'Online', 'WhatsApp'], required: true },
   address: {
     name: String,
     mobile: String,

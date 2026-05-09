@@ -480,7 +480,15 @@ const AdminDashboard = () => {
                     <tr key={order._id} className="border-b hover:bg-gray-50 transition-colors">
                       <td className="py-4 px-4 text-xs font-mono text-gray-500">{order._id?.slice(-6)}</td>
                       <td className="py-4 px-4">
-                        <div className="font-bold text-gray-800 text-sm">{order.user?.name || order.address?.name || 'Guest'}</div>
+                        <div className="flex items-center gap-2">
+                          <div className="font-bold text-gray-800 text-sm">{order.user?.name || order.address?.name || 'Guest'}</div>
+                          {order.paymentType === 'WhatsApp' && (
+                            <span className="flex items-center gap-1 bg-green-100 text-green-700 text-[8px] font-black px-1.5 py-0.5 rounded-full border border-green-200">
+                              <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="" className="w-2.5 h-2.5" />
+                              WHATSAPP ORDER
+                            </span>
+                          )}
+                        </div>
                         <div className="mt-2 space-y-1">
                           {order.products.map((item, idx) => (
                             <div key={idx} className="text-[10px] bg-gray-50 p-1.5 rounded border border-gray-100 max-w-[200px]">
@@ -506,14 +514,24 @@ const AdminDashboard = () => {
                         ) : 'N/A'}
                       </td>
                       <td className="py-4 px-4 font-bold text-primary text-sm">₹{order.totalPrice}</td>
-                      <td className="py-4 px-4 text-xs">{order.paymentType}</td>
+                      <td className="py-4 px-4">
+                        {order.paymentType === 'WhatsApp' ? (
+                          <div className="flex items-center gap-1 text-green-600 font-bold text-xs bg-green-50 px-2 py-1 rounded-lg border border-green-100 w-fit">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="" className="w-3 h-3" />
+                            WA
+                          </div>
+                        ) : (
+                          <span className="text-xs font-bold text-gray-600">{order.paymentType}</span>
+                        )}
+                      </td>
                       <td className="py-4 px-4">
                         <select 
                           value={order.status} 
                           onChange={(e) => handleStatusUpdate(order._id, e.target.value)}
-                          className="border rounded-lg px-2 py-1 text-xs font-bold bg-white focus:ring-2 focus:ring-primary outline-none"
+                          className={`border rounded-lg px-2 py-1 text-xs font-bold bg-white focus:ring-2 focus:ring-primary outline-none ${order.status === 'Under Verification' ? 'border-amber-400 text-amber-600 animate-pulse' : ''}`}
                         >
                           <option>Pending</option>
+                          <option>Under Verification</option>
                           <option>Processing</option>
                           <option>Dispatched</option>
                           <option>Delivered</option>
