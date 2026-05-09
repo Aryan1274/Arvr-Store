@@ -118,13 +118,13 @@ const DynamicSections = () => {
               </div>
 
               {isCard ? (
-                /* CARD SCROLLER */
-                <div className="flex gap-4 lg:gap-6 overflow-x-auto pb-6 hide-scrollbar snap-x">
+                /* CARD GRID */
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 lg:gap-6">
                   {collection.cards?.map((card, cIdx) => (
                     <div 
                       key={cIdx}
                       onClick={() => navigate(`/collection/${collection._id}/card/${cIdx}`)}
-                      className="min-w-[180px] md:min-w-[240px] lg:min-w-[300px] xl:min-w-[340px] h-[260px] md:h-[320px] lg:h-[400px] xl:h-[440px] relative rounded-[2rem] overflow-hidden group cursor-pointer snap-center shadow-xl shadow-gray-100 border border-gray-100 flex-shrink-0"
+                      className="relative aspect-[3/4.5] rounded-2xl overflow-hidden group cursor-pointer shadow-sm border border-gray-100 transition-all hover:shadow-lg active:scale-95"
                     >
                       {/* Background: Image or Golden Gradient */}
                       {card.image ? (
@@ -132,25 +132,25 @@ const DynamicSections = () => {
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-amber-300 via-amber-500 to-amber-600 flex items-center justify-center">
                           <div className="absolute inset-0 opacity-20 mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]"></div>
-                          <Zap className="w-12 h-12 md:w-16 md:h-16 lg:w-20 lg:h-20 text-white/20" />
+                          <Zap className="w-10 h-10 md:w-12 md:h-12 text-white/20" />
                         </div>
                       )}
                       
                       {/* Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent"></div>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent"></div>
                       
-                      <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8">
-                        <p className="text-[8px] md:text-[10px] lg:text-xs font-black text-amber-400 uppercase tracking-[0.2em] mb-1 md:mb-2 opacity-80 line-clamp-1">
+                      <div className="absolute bottom-0 left-0 right-0 p-3 md:p-4 lg:p-5">
+                        <p className="text-[7px] md:text-[9px] font-black text-amber-400 uppercase tracking-[0.2em] mb-1 opacity-80 line-clamp-1">
                           {card.cardType === 'price' ? `Budget Under ₹${card.priceLimit}` : 'Special Collection'}
                         </p>
-                        <h4 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-black text-white leading-tight mb-4 line-clamp-2">
+                        <h4 className="text-base md:text-lg lg:text-xl font-black text-white leading-tight mb-2 line-clamp-2">
                           {card.text}
                         </h4>
                         
                         {/* Hover Explore Button */}
-                        <div className="transform translate-y-8 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500">
-                          <div className="bg-white text-black font-black text-[8px] md:text-[10px] lg:text-xs uppercase tracking-[0.2em] py-2.5 md:py-3 lg:py-4 rounded-xl flex items-center justify-center gap-1 shadow-2xl">
-                            Explore <ChevronRight className="w-3 h-3 md:w-4 md:h-4 lg:w-5 lg:h-5" />
+                        <div className="transform translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                          <div className="bg-white text-black font-black text-[7px] md:text-[9px] uppercase tracking-[0.2em] py-2 rounded-lg flex items-center justify-center gap-1 shadow-2xl">
+                            Explore <ChevronRight className="w-3 h-3" />
                           </div>
                         </div>
                       </div>
