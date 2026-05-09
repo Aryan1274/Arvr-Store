@@ -46,7 +46,7 @@ const Contact = () => {
       name: 'WhatsApp',
       icon: <Phone className="w-5 h-5" />,
       color: 'bg-[#25D366]',
-      link: 'https://wa.me/919876543210', // Replace with real number
+      link: 'https://wa.me/919592881227', // Updated with user provided number
       label: 'Chat on WhatsApp'
     },
     {
@@ -139,7 +139,7 @@ const Contact = () => {
                       value={formData.name}
                       onChange={handleChange}
                       placeholder="Your Name"
-                      className="w-full bg-gray-50 border-2 border-transparent rounded-2xl px-6 py-4 outline-none focus:border-primary/30 focus:bg-white transition-all font-medium"
+                      className="w-full bg-gray-100/50 border-2 border-gray-100 rounded-2xl px-6 py-4 outline-none focus:border-primary/30 focus:bg-white transition-all font-medium text-gray-800"
                     />
                   </div>
                   
@@ -152,7 +152,7 @@ const Contact = () => {
                       value={formData.email}
                       onChange={handleChange}
                       placeholder="name@example.com"
-                      className="w-full bg-gray-50 border-2 border-transparent rounded-2xl px-6 py-4 outline-none focus:border-primary/30 focus:bg-white transition-all font-medium"
+                      className="w-full bg-gray-100/50 border-2 border-gray-100 rounded-2xl px-6 py-4 outline-none focus:border-primary/30 focus:bg-white transition-all font-medium text-gray-800"
                     />
                   </div>
 
@@ -165,7 +165,7 @@ const Contact = () => {
                       value={formData.message}
                       onChange={handleChange}
                       placeholder="How can we help you today?"
-                      className="w-full bg-gray-50 border-2 border-transparent rounded-2xl px-6 py-4 outline-none focus:border-primary/30 focus:bg-white transition-all font-medium resize-none"
+                      className="w-full bg-gray-100/50 border-2 border-gray-100 rounded-2xl px-6 py-4 outline-none focus:border-primary/30 focus:bg-white transition-all font-medium resize-none text-gray-800"
                     ></textarea>
                   </div>
                 </div>
