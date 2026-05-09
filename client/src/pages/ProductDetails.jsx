@@ -205,30 +205,30 @@ const ProductDetails = () => {
       </div>
 
       {/* Policies Section */}
-      <div className="mt-20 py-12 border-t border-b border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="flex flex-col items-center text-center p-6 rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
-            <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-              <RotateCcw className="w-8 h-8 text-primary" />
+      <div className="mt-12 md:mt-20 py-8 md:py-12 border-t border-b border-gray-100">
+        <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-8">
+          <div className="flex flex-col items-center text-center p-3 md:p-6 rounded-2xl md:rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
+            <div className="w-10 h-10 md:w-16 md:h-16 bg-pink-50 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-6 group-hover:scale-110 transition-transform duration-500">
+              <RotateCcw className="w-5 h-5 md:w-8 md:h-8 text-primary" />
             </div>
-            <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">{product.returnPolicy || "No Return"}</h3>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">Return Policy</p>
+            <h3 className="text-[8px] sm:text-xs md:text-lg font-black text-gray-900 mb-1 md:mb-2 uppercase tracking-tight line-clamp-1">{product.returnPolicy || "No Return"}</h3>
+            <p className="text-[6px] sm:text-[8px] md:text-xs text-gray-400 font-bold uppercase tracking-widest leading-relaxed">Policy</p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-6 rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
-            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-              <Truck className="w-8 h-8 text-blue-500" />
+          <div className="flex flex-col items-center text-center p-3 md:p-6 rounded-2xl md:rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
+            <div className="w-10 h-10 md:w-16 md:h-16 bg-blue-50 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-6 group-hover:scale-110 transition-transform duration-500">
+              <Truck className="w-5 h-5 md:w-8 md:h-8 text-blue-500" />
             </div>
-            <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">{product.deliveryTime || "Delivery under 10 days"}</h3>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">Fast Delivery</p>
+            <h3 className="text-[8px] sm:text-xs md:text-lg font-black text-gray-900 mb-1 md:mb-2 uppercase tracking-tight line-clamp-1">{product.deliveryTime || "Delivery under 10 days"}</h3>
+            <p className="text-[6px] sm:text-[8px] md:text-xs text-gray-400 font-bold uppercase tracking-widest leading-relaxed">Fast</p>
           </div>
 
-          <div className="flex flex-col items-center text-center p-6 rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
-            <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
-              <Headphones className="w-8 h-8 text-green-500" />
+          <div className="flex flex-col items-center text-center p-3 md:p-6 rounded-2xl md:rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
+            <div className="w-10 h-10 md:w-16 md:h-16 bg-green-50 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-6 group-hover:scale-110 transition-transform duration-500">
+              <Headphones className="w-5 h-5 md:w-8 md:h-8 text-green-500" />
             </div>
-            <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">24/7 Support</h3>
-            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">Customer Service</p>
+            <h3 className="text-[8px] sm:text-xs md:text-lg font-black text-gray-900 mb-1 md:mb-2 uppercase tracking-tight line-clamp-1">24/7 Support</h3>
+            <p className="text-[6px] sm:text-[8px] md:text-xs text-gray-400 font-bold uppercase tracking-widest leading-relaxed">Service</p>
           </div>
         </div>
       </div>
