@@ -97,7 +97,7 @@ router.post('/', upload.array('images', 5), async (req, res) => {
 // UPDATE product (Admin)
 router.put('/:id', upload.array('images', 5), async (req, res) => {
   try {
-    const { name, description, price, category, stock, existingImages, tags, variants } = req.body;
+    const { name, description, price, category, stock, existingImages, tags, variants, returnPolicy, deliveryTime, shippingCharges } = req.body;
     let imageUrls = existingImages ? (Array.isArray(existingImages) ? existingImages : [existingImages]) : [];
     
     let parsedTags = [];
