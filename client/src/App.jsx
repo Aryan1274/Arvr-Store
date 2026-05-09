@@ -4,6 +4,7 @@ import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
+import AllCategories from './pages/AllCategories';
 import CategoryListing from './pages/CategoryListing';
 import ProductDetails from './pages/ProductDetails';
 import Cart from './pages/Cart';
@@ -35,6 +36,7 @@ function App() {
           <main className="flex-grow">
             <Routes>
               <Route path="/" element={<Home />} />
+              <Route path="/categories" element={<AllCategories />} />
               <Route path="/category/:id" element={<CategoryListing />} />
               <Route path="/product/:id" element={<ProductDetails />} />
               <Route path="/cart" element={<Cart />} />
