@@ -296,6 +296,7 @@ const Checkout = () => {
                 );
               })}
             </div>
+            {appliedCoupon && (
               <div className="flex justify-between text-green-600 font-bold text-sm mb-4">
                 <span>Coupon Discount</span>
                 <span>-₹{(getCartTotal() - calculateDiscountedTotal() + getShippingTotal()).toFixed(2)}</span>
