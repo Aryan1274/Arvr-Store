@@ -169,7 +169,7 @@ const Profile = () => {
                 <button onClick={() => navigate('/')} className="text-primary font-black text-sm uppercase tracking-widest hover:underline">Start Shopping</button>
               </div>
             )
-          ) : (
+          ) : activeTab === 'history' ? (
             orderHistory.length > 0 ? (
               orderHistory.map(order => <OrderCard key={order._id} order={order} />)
             ) : (
