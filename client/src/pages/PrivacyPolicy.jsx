@@ -30,7 +30,7 @@ const PrivacyPolicy = () => {
 
           <section>
             <h2 className="text-2xl font-bold text-gray-800 mb-3">5. Contact Us</h2>
-            <p>If you have any questions about this Privacy Policy, please contact us at support@arvrstore.com.</p>
+            <p>If you have any questions about this Privacy Policy, please contact us at official.arvr@gmail.com.</p>
           </section>
         </div>
       </div>

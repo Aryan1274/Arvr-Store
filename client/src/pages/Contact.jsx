@@ -53,7 +53,7 @@ const Contact = () => {
       name: 'Instagram',
       icon: <Instagram className="w-5 h-5" />,
       color: 'bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888]',
-      link: 'https://instagram.com/arvrstore', // Replace with real link
+      link: 'https://instagram.com/aryan120704', // Updated with user provided username
       label: 'Follow on Instagram'
     }
   ];
@@ -94,7 +94,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-800">Email Us</h4>
-                  <p className="text-gray-500 text-sm">support@arvrstore.com</p>
+                  <p className="text-gray-500 text-sm">official.arvr@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-4">

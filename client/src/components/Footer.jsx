@@ -50,7 +50,7 @@ const Footer = () => {
         <div>
           <h4 className="font-black text-gray-900 uppercase tracking-widest text-xs mb-6">Follow Us</h4>
           <div className="flex gap-4">
-            <a href="https://instagram.com/arvrstore" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-primary hover:bg-pink-50 transition-all border border-gray-100">
+            <a href="https://instagram.com/aryan120704" target="_blank" rel="noopener noreferrer" className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-primary hover:bg-pink-50 transition-all border border-gray-100">
               <Instagram className="w-5 h-5" />
             </a>
             <a href="#" className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all border border-gray-100">
