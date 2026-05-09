@@ -29,6 +29,7 @@ app.use('/api/collections', require('./routes/collectionRoutes'));
 app.use('/api/settings', require('./routes/settingRoutes'));
 app.use('/api/users', require('./routes/userRoutes'));
 app.use('/api/coupons', require('./routes/couponRoutes'));
+app.use('/api/newsletter', require('./routes/newsletterRoutes'));
 
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'ARVR Store Backend is running!' });

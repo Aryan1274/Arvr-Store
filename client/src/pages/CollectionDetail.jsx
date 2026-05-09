@@ -3,7 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import api from '../api';
 import ProductCard from '../components/ProductCard';
 import { useCoupons } from '../context/CouponContext';
-import { Timer, Zap, Gift, ChevronLeft } from 'lucide-react';
+import { Timer, Zap, Gift, ChevronLeft, Loader2 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import SubscribeModal from '../components/SubscribeModal';
 
 const FlashTimer = ({ endTime }) => {
   const [timeLeft, setTimeLeft] = useState({ h: '00', m: '00', s: '00' });
@@ -57,10 +59,29 @@ const CollectionDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const { getProductDiscount } = useCoupons();
+  const { user } = useAuth();
   
   // State for fetching products for price-based cards
   const [priceFilteredProducts, setPriceFilteredProducts] = useState(null);
   const [fetchingProducts, setFetchingProducts] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleSubscribe = async () => {
+    if (user) {
+      setIsSubscribing(true);
+      try {
+        await api.post('/api/newsletter/subscribe', { email: user.email, userId: user._id || user.id });
+        alert('Successfully subscribed to newsletter!');
+      } catch (err) {
+        alert(err.response?.data?.message || 'Failed to subscribe.');
+      } finally {
+        setIsSubscribing(false);
+      }
+    } else {
+      setIsModalOpen(true);
+    }
+  };
 
   useEffect(() => {
     const fetchCollection = async () => {
@@ -228,11 +249,17 @@ const CollectionDetail = () => {
           <p className={`mb-8 font-medium ${isDeal ? 'text-gray-500' : 'text-gray-500'}`}>
             Join our community to get early access to special offers and deals.
           </p>
-          <button className={`px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all ${isCardDetail ? 'bg-amber-500 text-white shadow-xl shadow-amber-200 hover:scale-105' : isOffer ? 'bg-rose-600 text-white shadow-xl shadow-rose-200 hover:scale-105' : isDeal ? 'bg-white text-black hover:scale-105' : 'bg-gray-900 text-white hover:scale-105'}`}>
-            Subscribe Now
+          <button 
+            onClick={handleSubscribe}
+            disabled={isSubscribing}
+            className={`px-10 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all flex items-center justify-center gap-2 mx-auto ${isCardDetail ? 'bg-amber-500 text-white shadow-xl shadow-amber-200 hover:scale-105' : isOffer ? 'bg-rose-600 text-white shadow-xl shadow-rose-200 hover:scale-105' : isDeal ? 'bg-white text-black hover:scale-105' : 'bg-gray-900 text-white hover:scale-105'} disabled:opacity-70`}
+          >
+            {isSubscribing ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Subscribe Now'}
           </button>
         </div>
       </div>
+      
+      <SubscribeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   );
 
