@@ -20,6 +20,13 @@ const AdminDashboard = () => {
   // Form States
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    description: '', 
+    price: '', 
+    category: '', 
+    stock: 0, 
+    tags: [],
     variants: {
       sizes: [],
       colors: [],
