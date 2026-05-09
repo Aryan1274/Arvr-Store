@@ -5,7 +5,7 @@ import api from '../api';
 import { Package, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
 const Profile = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +31,8 @@ const Profile = () => {
     e.preventDefault();
     setSaving(true);
     try {
-      await api.put(`/api/users/${user._id}`, { address: addressForm });
+      const res = await api.put(`/api/users/${user._id}`, { address: addressForm });
+      updateUser(res.data); // Update global Auth state and localStorage
       alert('Address saved successfully! It will now be pre-filled at checkout.');
     } catch (err) {
       alert('Failed to save address');
@@ -39,6 +40,21 @@ const Profile = () => {
       setSaving(false);
     }
   };
+
+  // Sync form with user data if user data updates (e.g. on load or after save)
+  useEffect(() => {
+    if (user?.address) {
+      setAddressForm({
+        name: user.address.name || user.name || '',
+        mobile: user.address.mobile || '',
+        addressLine: user.address.addressLine || '',
+        landmark: user.address.landmark || '',
+        pincode: user.address.pincode || '',
+        city: user.address.city || '',
+        state: user.address.state || ''
+      });
+    }
+  }, [user]);
 
   const fetchOrders = async () => {
     try {

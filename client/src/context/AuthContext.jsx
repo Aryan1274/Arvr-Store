@@ -38,8 +38,12 @@ export const AuthProvider = ({ children }) => {
     setToken(null);
   };
 
+  const updateUser = (updatedUser) => {
+    setUser(updatedUser);
+  };
+
   return (
-    <AuthContext.Provider value={{ user, token, loginWithGoogle, logout }}>
+    <AuthContext.Provider value={{ user, token, loginWithGoogle, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
