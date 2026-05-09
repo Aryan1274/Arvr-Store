@@ -88,11 +88,13 @@ const Cart = () => {
           </div>
           <div className="flex justify-between mb-4 text-gray-600">
             <span>Shipping</span>
-            <span className="text-green-500">Free</span>
+            <span className={getShippingTotal() === 0 ? "text-green-500" : "text-gray-800"}>
+              {getShippingTotal() === 0 ? "Free" : `₹${getShippingTotal().toFixed(2)}`}
+            </span>
           </div>
           <div className="border-t pt-4 flex justify-between font-bold text-lg text-gray-800 mb-6">
             <span>Total</span>
-            <span>₹{getCartTotal().toFixed(2)}</span>
+            <span>₹{(getCartTotal() + getShippingTotal()).toFixed(2)}</span>
           </div>
           <button 
             onClick={() => navigate('/checkout')}

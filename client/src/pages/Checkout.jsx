@@ -6,7 +6,7 @@ import api from '../api';
 import { useCoupons } from '../context/CouponContext';
 
 const Checkout = () => {
-  const { cart, getCartTotal, clearCart } = useCart();
+  const { cart, getCartTotal, getShippingTotal, clearCart } = useCart();
   const { getProductDiscount } = useCoupons();
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ const Checkout = () => {
       });
       total -= discountAmount;
     }
-    return Math.max(0, total);
+    return Math.max(0, total + getShippingTotal());
   };
 
   const handleRazorpayPayment = async (orderData) => {
@@ -151,6 +151,8 @@ const Checkout = () => {
           quantity: item.quantity,
           selectedOptions: item.selectedOptions
         })),
+        subTotal: calculateDiscountedTotal() - getShippingTotal(),
+        shippingCharges: getShippingTotal(),
         totalPrice: calculateDiscountedTotal(),
         paymentType: paymentMethod,
         address: formData,
@@ -294,12 +296,17 @@ const Checkout = () => {
                 );
               })}
             </div>
-            {appliedCoupon && (
               <div className="flex justify-between text-green-600 font-bold text-sm mb-4">
                 <span>Coupon Discount</span>
-                <span>-₹{(getCartTotal() - calculateDiscountedTotal()).toFixed(2)}</span>
+                <span>-₹{(getCartTotal() - calculateDiscountedTotal() + getShippingTotal()).toFixed(2)}</span>
               </div>
             )}
+            <div className="flex justify-between text-gray-600 text-sm mb-4">
+              <span>Shipping</span>
+              <span className={getShippingTotal() === 0 ? "text-green-500" : "text-gray-800"}>
+                {getShippingTotal() === 0 ? "Free" : `₹${getShippingTotal().toFixed(2)}`}
+              </span>
+            </div>
             <div className="border-t pt-4 flex justify-between font-bold text-lg text-gray-800 mb-6">
               <span>Total to Pay</span>
               <span>₹{calculateDiscountedTotal().toFixed(2)}</span>

@@ -11,6 +11,8 @@ const orderSchema = new mongoose.Schema({
       custom: String
     }
   }],
+  subTotal: { type: Number, required: true },
+  shippingCharges: { type: Number, required: true, default: 49 },
   totalPrice: { type: Number, required: true },
   status: { type: String, enum: ['Pending', 'Processing', 'Dispatched', 'Delivered'], default: 'Pending' },
   deliveryDate: { type: Date },

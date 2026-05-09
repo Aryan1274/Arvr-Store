@@ -13,11 +13,13 @@ const razorpay = new Razorpay({
 // Create Order (COD or Online)
 router.post('/create', async (req, res) => {
   try {
-    const { products, totalPrice, paymentType, address, userId } = req.body;
+    const { products, totalPrice, subTotal, shippingCharges, paymentType, address, userId } = req.body;
 
     const newOrder = new Order({
-      user: userId, // Temporarily using passed user ID. In production, get from JWT auth middleware.
+      user: userId,
       products,
+      subTotal,
+      shippingCharges,
       totalPrice,
       paymentType,
       address,

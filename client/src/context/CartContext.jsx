@@ -63,10 +63,17 @@ export const CartProvider = ({ children }) => {
     }, 0);
   };
 
+  const getShippingTotal = () => {
+    if (cart.length === 0) return 0;
+    // Get the minimum shipping charge from all items in the cart
+    const charges = cart.map(item => item.shippingCharges ?? 49);
+    return Math.min(...charges);
+  };
+
   const clearCart = () => setCart([]);
 
   return (
-    <CartContext.Provider value={{ cart, addToCart, updateQuantity, removeFromCart, getCartTotal, clearCart }}>
+    <CartContext.Provider value={{ cart, addToCart, updateQuantity, removeFromCart, getCartTotal, getShippingTotal, clearCart }}>
       {children}
     </CartContext.Provider>
   );

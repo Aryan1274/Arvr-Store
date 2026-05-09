@@ -287,11 +287,16 @@ const AdminDashboard = () => {
 
     // Totals
     const finalY = doc.lastAutoTable.finalY || 85;
+    doc.setFontSize(10);
+    doc.setTextColor(100);
+    doc.text(`Subtotal: Rs. ${order.subTotal || (order.totalPrice - (order.shippingCharges || 0))}`, 14, finalY + 15);
+    doc.text(`Shipping: Rs. ${order.shippingCharges || 0}`, 14, finalY + 22);
+    
     doc.setFontSize(12);
     doc.setTextColor(40);
-    doc.text(`Total Amount: Rs. ${order.totalPrice}`, 14, finalY + 15);
+    doc.text(`Total Amount: Rs. ${order.totalPrice}`, 14, finalY + 32);
     if (order.couponCode) {
-      doc.text(`Coupon Applied: ${order.couponCode}`, 14, finalY + 22);
+      doc.text(`Coupon Applied: ${order.couponCode}`, 14, finalY + 39);
     }
 
     doc.save(`Invoice_${order._id?.slice(-6)}.pdf`);
