@@ -21,6 +21,21 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user, token]);
 
+  useEffect(() => {
+    const fetchMe = async () => {
+      if (token) {
+        try {
+          const res = await api.get('/api/auth/me');
+          setUser(res.data);
+        } catch (err) {
+          console.error('Failed to sync user:', err);
+          if (err.response?.status === 401) logout();
+        }
+      }
+    };
+    fetchMe();
+  }, [token]);
+
   const loginWithGoogle = async (credential) => {
     try {
       const response = await api.post('/api/auth/google', { credential });
