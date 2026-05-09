@@ -80,7 +80,7 @@ const Profile = () => {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 py-8">
       <div className="flex items-center justify-between mb-8 border-b pb-6">
         <h1 className="text-3xl font-black text-gray-800 tracking-tight">My Profile</h1>
         <button 

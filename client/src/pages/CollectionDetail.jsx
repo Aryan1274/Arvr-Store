@@ -155,7 +155,7 @@ const CollectionDetail = () => {
     <div className={`min-h-screen transition-all duration-700 ${isCardDetail ? 'bg-gradient-to-b from-amber-50 to-white' : isOffer ? 'bg-gradient-to-b from-rose-50 to-white' : isDeal ? 'bg-[#0a0c10]' : 'bg-gray-50'}`}>
       {/* Hero Section */}
       <div className={`pt-10 pb-20 px-4 ${isCardDetail ? 'bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 text-white shadow-2xl shadow-amber-200 rounded-b-[4rem]' : isOffer ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-700 text-white shadow-2xl shadow-pink-200 rounded-b-[4rem]' : isDeal ? 'bg-gradient-to-b from-gray-900 to-transparent text-white' : 'bg-white border-b border-gray-100'}`}>
-        <div className="w-full mx-auto px-4 lg:px-12 xl:px-20 2xl:px-32">
+        <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16">
           <button 
             onClick={() => navigate('/')}
             className={`flex items-center gap-2 mb-10 font-black text-[10px] uppercase tracking-widest px-5 py-2.5 rounded-full transition-all ${isSpecialUI ? 'bg-white/10 hover:bg-white/20 text-white backdrop-blur-md' : 'bg-gray-100 hover:bg-gray-200 text-gray-600'}`}
@@ -189,7 +189,7 @@ const CollectionDetail = () => {
       </div>
 
       {/* Products Grid */}
-      <div className="w-full mx-auto px-4 lg:px-12 xl:px-20 2xl:px-32 py-16">
+      <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 py-16">
         <div className="flex items-center justify-between mb-10">
           <h3 className={`text-sm font-black uppercase tracking-[0.2em] ${isDeal ? 'text-gray-500' : 'text-gray-400'}`}>
             Showing {displayProducts.length} Products
@@ -220,7 +220,7 @@ const CollectionDetail = () => {
       </div>
 
       {/* Footer CTA (Optional) */}
-      <div className="w-full mx-auto px-4 lg:px-12 xl:px-20 2xl:px-32 pb-20">
+      <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 pb-20">
         <div className={`p-10 md:p-16 rounded-[4rem] text-center ${isCardDetail ? 'bg-amber-50 border-2 border-amber-100' : isOffer ? 'bg-rose-50 border-2 border-rose-100' : isDeal ? 'bg-gray-900 border border-white/5' : 'bg-gray-100'}`}>
           <h2 className={`text-2xl md:text-3xl font-black mb-4 ${isDeal ? 'text-white' : 'text-gray-900'}`}>
             Stay Updated on New Arrivals

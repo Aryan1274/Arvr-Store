@@ -90,8 +90,8 @@ const ProductDetails = () => {
   const formatPrice = (p) => `₹${Math.round(p)}`;
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl">
-      <div className="flex flex-col md:flex-row gap-8">
+    <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 py-8">
+      <div className="flex flex-col md:flex-row gap-8 lg:gap-16 xl:gap-24">
         {/* Image Gallery */}
         <div className="w-full md:w-1/2 flex flex-col-reverse md:flex-row gap-4">
           <div className="flex md:flex-col gap-2 overflow-x-auto md:w-24 hide-scrollbar">
@@ -202,11 +202,9 @@ const ProductDetails = () => {
       {similarProducts.length > 0 && (
         <div className="mt-16">
           <h2 className="text-2xl font-bold text-gray-800 mb-6">You might also like</h2>
-          <div className="flex overflow-x-auto gap-4 pb-4 hide-scrollbar">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-4 lg:gap-6">
             {similarProducts.map(p => (
-              <div key={p._id} className="min-w-[200px] max-w-[200px]">
-                <ProductCard product={p} discount={getProductDiscount(p._id)} />
-              </div>
+              <ProductCard key={p._id} product={p} discount={getProductDiscount(p._id)} />
             ))}
           </div>
         </div>

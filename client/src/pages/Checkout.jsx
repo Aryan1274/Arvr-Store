@@ -178,9 +178,9 @@ const Checkout = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 py-8">
       <h1 className="text-3xl font-bold text-gray-800 mb-8 border-b pb-4">Checkout</h1>
-      <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-8">
+      <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-8 lg:gap-16 xl:gap-24">
         
         <div className="flex-1 space-y-8">
           <div className="bg-white p-6 rounded-xl border shadow-sm">

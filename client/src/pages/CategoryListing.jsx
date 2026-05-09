@@ -34,7 +34,7 @@ const CategoryListing = () => {
   }, [id]);
   
   return (
-    <div className="w-full mx-auto px-4 lg:px-12 xl:px-20 2xl:px-32 py-8 lg:py-12 min-h-[60vh]">
+    <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 py-8 lg:py-12 min-h-[60vh]">
       <h1 className="text-3xl lg:text-5xl xl:text-6xl font-bold text-text-main mb-8 lg:mb-12 capitalize text-center border-b border-theme pb-4 lg:pb-6">
         {formatCategoryName(id).toLowerCase().includes('collection') 
           ? formatCategoryName(id) 

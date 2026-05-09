@@ -40,14 +40,14 @@ const SearchResults = () => {
 
   return (
     <div className="bg-[#fdf2f8] min-h-screen pb-20">
-      <div className="max-w-7xl mx-auto px-4 pt-6">
+      <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 pt-6">
         {/* Search Header */}
         <div className="flex items-center gap-4 mb-8">
           <button onClick={() => navigate(-1)} className="p-2 bg-white rounded-full shadow-sm hover:bg-pink-50 transition-colors">
             <ChevronLeft className="w-6 h-6 text-gray-600" />
           </button>
           <form onSubmit={handleSearch} className="flex-1">
-            <div className="flex items-center bg-white rounded-full px-5 py-3 shadow-md border border-pink-100">
+            <div className="flex items-center bg-white rounded-full px-5 py-3 shadow-md border border-pink-100 lg:max-w-3xl">
               <Search className="w-5 h-5 text-primary mr-3" />
               <input 
                 type="text" 
@@ -75,7 +75,7 @@ const SearchResults = () => {
             <p className="text-gray-400 font-bold">Scanning the warehouse...</p>
           </div>
         ) : products.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {products.map(product => (
               <ProductCard key={product._id} product={product} />
             ))}

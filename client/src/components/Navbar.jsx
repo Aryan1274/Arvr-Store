@@ -26,7 +26,7 @@ const Navbar = () => {
 
   return (
     <nav className="bg-bg-card shadow-sm py-3 lg:py-4 px-2 lg:px-6 sticky top-0 z-50">
-      <div className="w-full mx-auto flex justify-between items-center px-4 lg:px-12 xl:px-20 2xl:px-32">
+      <div className="w-full mx-auto flex justify-between items-center px-4 lg:px-6 xl:px-10 2xl:px-16">
         <div className="flex items-center gap-4">
           <button 
             className="md:hidden text-text-main/80 p-1 hover:bg-primary-light rounded-md"

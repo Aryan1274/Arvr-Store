@@ -21,9 +21,9 @@ const Cart = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 lg:px-10 py-8 lg:py-12 max-w-5xl lg:max-w-6xl xl:max-w-7xl">
+    <div className="w-full mx-auto px-4 lg:px-6 xl:px-10 2xl:px-16 py-8 lg:py-12">
       <h1 className="text-3xl lg:text-5xl font-bold text-gray-800 mb-8 lg:mb-10 border-b pb-4 lg:pb-6">Your Bag</h1>
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-16 xl:gap-24">
         <div className="flex-1 space-y-4">
           {cart.map((item) => {
             const productId = item._id || item.id;

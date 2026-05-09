@@ -84,7 +84,7 @@ const DynamicSections = () => {
         
         return (
           <div key={collection._id} className={`${isOffer || isDeal ? 'py-12 lg:py-20 xl:py-24' : isCard ? 'py-10 lg:py-16' : 'py-4'} ${isOffer ? 'bg-gradient-to-br from-rose-500 via-pink-600 to-fuchsia-700 rounded-[3rem] lg:rounded-[4rem] shadow-xl shadow-pink-200/50 text-white' : isDeal ? 'bg-gray-900 rounded-[3rem] lg:rounded-[4rem] shadow-2xl text-white' : isCard ? 'bg-white rounded-[3rem] lg:rounded-[4rem] shadow-sm border border-gray-100' : 'w-full'}`}>
-            <div className="w-full px-6 lg:px-10 xl:px-16 2xl:px-24">
+            <div className="w-full px-3 lg:px-5 xl:px-8 2xl:px-12">
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 lg:mb-12 gap-4">
                 <div>
                   <div className="flex items-center gap-2 mb-2">

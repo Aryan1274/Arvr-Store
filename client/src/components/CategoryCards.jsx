@@ -19,7 +19,7 @@ const CategoryCards = () => {
   return (
     <div className="my-6 lg:my-10">
       {/* Mobile: horizontal scroll | Desktop: flex-wrap centered row */}
-      <div className="flex overflow-x-auto lg:flex-wrap lg:overflow-x-visible lg:justify-start gap-4 lg:gap-8 xl:gap-10 px-4 lg:px-10 xl:px-14 pb-4 lg:pb-2 hide-scrollbar">
+      <div className="flex overflow-x-auto lg:flex-wrap lg:overflow-x-visible lg:justify-start gap-4 lg:gap-8 xl:gap-10 px-2 lg:px-5 xl:px-7 pb-4 lg:pb-2 hide-scrollbar">
         <Link 
           to="/categories"
           className="flex flex-col items-center gap-2 min-w-[80px] lg:min-w-0"
