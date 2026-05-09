@@ -2,29 +2,34 @@ const express = require('express');
 const router = express.Router();
 const Setting = require('../models/Setting');
 
-// Get active theme
-router.get('/theme', async (req, res) => {
+// Get settings by key
+router.get('/:key', async (req, res) => {
   try {
-    let theme = await Setting.findOne({ key: 'activeTheme' });
-    if (!theme) {
-      theme = await Setting.create({ key: 'activeTheme', value: 'pink' });
+    let setting = await Setting.findOne({ key: req.params.key });
+    if (!setting) {
+      // Default settings
+      if (req.params.key === 'payment_methods') {
+        setting = await Setting.create({ 
+          key: 'payment_methods', 
+          value: { cod: true, online: true, whatsapp: true } 
+        });
+      }
     }
-    res.json({ theme: theme.value });
+    res.json(setting);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
-// Update active theme
-router.post('/theme', async (req, res) => {
+// Update settings by key
+router.put('/:key', async (req, res) => {
   try {
-    const { theme } = req.body;
     const updated = await Setting.findOneAndUpdate(
-      { key: 'activeTheme' },
-      { value: theme },
+      { key: req.params.key },
+      { value: req.body.value },
       { upsert: true, returnDocument: 'after' }
     );
-    res.json({ theme: updated.value });
+    res.json(updated);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

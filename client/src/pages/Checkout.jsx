@@ -10,8 +10,9 @@ const Checkout = () => {
   const { getProductDiscount } = useCoupons();
   const { user } = useAuth();
   const navigate = useNavigate();
-  const [paymentMethod, setPaymentMethod] = useState('COD');
+  const [paymentMethod, setPaymentMethod] = useState('Online');
   const [loading, setLoading] = useState(false);
+  const [paymentSettings, setPaymentSettings] = useState({ cod: true, online: true, whatsapp: true });
   const [hasCoupon, setHasCoupon] = useState(false);
   const [couponCode, setCouponCode] = useState('');
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -21,7 +22,8 @@ const Checkout = () => {
     name: user?.name || '', mobile: '', email: user?.email || '', addressLine: '', landmark: '', pincode: '', city: '', state: ''
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
+    fetchPaymentSettings();
     const fetchCoupons = async () => {
       try {
         const res = await api.get('/api/coupons');
@@ -30,6 +32,18 @@ const Checkout = () => {
     };
     fetchCoupons();
   }, []);
+
+  const fetchPaymentSettings = async () => {
+    try {
+      const res = await api.get('/api/settings/payment_methods');
+      if (res.data?.value) {
+        setPaymentSettings(res.data.value);
+        if (res.data.value.online) setPaymentMethod('Online');
+        else if (res.data.value.cod) setPaymentMethod('COD');
+        else if (res.data.value.whatsapp) setPaymentMethod('WhatsApp');
+      }
+    } catch (err) { console.error(err); }
+  };
 
   React.useEffect(() => {
     if (cart.length === 0) {
@@ -66,7 +80,6 @@ const Checkout = () => {
         const productId = item._id || item.id;
         const isApplicable = appliedCoupon.applicableProducts.some(p => (p._id || p) === productId);
         if (isApplicable) {
-          // IMPORTANT: Promo/Special discounts should apply to the ALREADY discounted price (if any)
           const autoDiscount = getProductDiscount(productId);
           let currentPrice = parseFloat(String(item.price).replace('₹', ''));
           if (autoDiscount && autoDiscount.type === 'Discount') {
@@ -300,21 +313,27 @@ _Please verify and confirm my order._`;
           <div className="bg-white p-6 rounded-xl border shadow-sm">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Payment Method</h2>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                <input type="radio" name="payment" value="Online" checked={paymentMethod === 'Online'} onChange={() => setPaymentMethod('Online')} className="w-4 h-4 text-primary" />
-                <span className="font-medium text-gray-700">Online Payment (Razorpay)</span>
-              </label>
-              <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
-                <input type="radio" name="payment" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} className="w-4 h-4 text-primary" />
-                <span className="font-medium text-gray-700">Cash on Delivery (COD)</span>
-              </label>
-              <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-green-50 border-green-100 bg-green-50/20">
-                <input type="radio" name="payment" value="WhatsApp" checked={paymentMethod === 'WhatsApp'} onChange={() => setPaymentMethod('WhatsApp')} className="w-4 h-4 text-green-600" />
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-green-700">Order on WhatsApp</span>
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" className="w-4 h-4" />
-                </div>
-              </label>
+              {paymentSettings.online && (
+                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input type="radio" name="payment" value="Online" checked={paymentMethod === 'Online'} onChange={() => setPaymentMethod('Online')} className="w-4 h-4 text-primary" />
+                  <span className="font-medium text-gray-700">Online Payment (Razorpay)</span>
+                </label>
+              )}
+              {paymentSettings.cod && (
+                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-gray-50">
+                  <input type="radio" name="payment" value="COD" checked={paymentMethod === 'COD'} onChange={() => setPaymentMethod('COD')} className="w-4 h-4 text-primary" />
+                  <span className="font-medium text-gray-700">Cash on Delivery (COD)</span>
+                </label>
+              )}
+              {paymentSettings.whatsapp && (
+                <label className="flex items-center gap-3 p-3 border rounded-lg cursor-pointer hover:bg-green-50 border-green-100 bg-green-50/20">
+                  <input type="radio" name="payment" value="WhatsApp" checked={paymentMethod === 'WhatsApp'} onChange={() => setPaymentMethod('WhatsApp')} className="w-4 h-4 text-green-600" />
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-green-700">Order on WhatsApp</span>
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WA" className="w-4 h-4" />
+                  </div>
+                </label>
+              )}
             </div>
           </div>
         </div>

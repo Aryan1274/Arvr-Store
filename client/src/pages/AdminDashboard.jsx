@@ -78,6 +78,7 @@ const AdminDashboard = () => {
   const [couponStep, setCouponStep] = useState('type'); // 'type', 'categories', 'products', 'config'
   const [editingCollection, setEditingCollection] = useState(null);
   const [collectionFormData, setCollectionFormData] = useState({ name: '', title: '', template: 'default', isActive: true, order: 0, cards: [] });
+  const [ordersSettings, setOrdersSettings] = useState(null);
 
   useEffect(() => {
     localStorage.setItem('adminActiveTab', activeTab);
@@ -92,8 +93,16 @@ const AdminDashboard = () => {
       fetchCollections();
       fetchUsers();
       fetchCoupons();
+      fetchOrdersSettings();
     }
   }, [user]);
+
+  const fetchOrdersSettings = async () => {
+    try {
+      const res = await api.get('/api/settings/payment_methods');
+      setOrdersSettings(res.data);
+    } catch (err) { console.error(err); }
+  };
 
   const fetchCollections = async () => {
     try {
@@ -450,6 +459,12 @@ const AdminDashboard = () => {
               className={`whitespace-nowrap px-4 py-2.5 md:py-3 rounded-xl font-medium transition-all text-sm md:text-base ${activeTab === 'theme' ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-text-main hover:bg-primary-light flex-1 md:flex-none text-center md:text-left'}`}
             >
               Theme
+            </button>
+            <button 
+              onClick={() => setActiveTab('payment')}
+              className={`whitespace-nowrap px-4 py-2.5 md:py-3 rounded-xl font-medium transition-all text-sm md:text-base ${activeTab === 'payment' ? 'bg-primary text-white shadow-md shadow-primary/30' : 'text-text-main hover:bg-primary-light flex-1 md:flex-none text-center md:text-left'}`}
+            >
+              Payment Control
             </button>
           </div>
         </div>
@@ -1186,6 +1201,58 @@ const AdminDashboard = () => {
 
               <div className="mt-12 p-6 rounded-3xl bg-gray-50 border-2 border-dashed border-gray-200 text-center">
                 <p className="text-gray-500 font-bold text-sm">Selecting a theme will apply it to the entire website for all visitors.</p>
+              </div>
+            </div>
+          </div>
+        {activeTab === 'payment' && (
+          <div className="space-y-8 animate-in fade-in duration-500">
+            <div className="bg-white rounded-3xl shadow-sm border p-8">
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-green-50 rounded-2xl">
+                  <Ticket className="w-8 h-8 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-2xl font-black text-gray-800 tracking-tight">Payment <span className="text-green-600">Method Control</span></h3>
+                  <p className="text-gray-400 text-sm font-bold uppercase tracking-widest">Toggle checkout payment options</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {[
+                  { id: 'cod', name: 'Cash on Delivery', desc: 'Allow customers to pay when they receive the order.', icon: '🚚' },
+                  { id: 'online', name: 'Online Payment', desc: 'Secure payments via Razorpay (Cards, UPI, Netbanking).', icon: '💳' },
+                  { id: 'whatsapp', name: 'WhatsApp Order', desc: 'Direct orders via pre-filled WhatsApp messages.', icon: '💬' }
+                ].map(method => (
+                  <div key={method.id} className="bg-gray-50 p-8 rounded-[2.5rem] border-2 border-transparent hover:border-gray-100 transition-all">
+                    <div className="flex justify-between items-start mb-6">
+                      <span className="text-4xl">{method.icon}</span>
+                      <button 
+                        onClick={async () => {
+                          const currentMethods = ordersSettings?.value || { cod: true, online: true, whatsapp: true };
+                          const updatedMethods = { ...currentMethods, [method.id]: !currentMethods[method.id] };
+                          try {
+                            const res = await api.put('/api/settings/payment_methods', { value: updatedMethods });
+                            setOrdersSettings(res.data);
+                          } catch (err) { alert('Failed to update payment settings'); }
+                        }}
+                        className={`relative w-14 h-7 rounded-full transition-colors ${ordersSettings?.value?.[method.id] ? 'bg-green-500' : 'bg-gray-300'}`}
+                      >
+                        <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${ordersSettings?.value?.[method.id] ? 'translate-x-7' : ''}`} />
+                      </button>
+                    </div>
+                    <h4 className="text-xl font-black text-gray-800 mb-2">{method.name}</h4>
+                    <p className="text-sm text-gray-500 font-medium leading-relaxed mb-4">{method.desc}</p>
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${ordersSettings?.value?.[method.id] ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-500'}`}>
+                      {ordersSettings?.value?.[method.id] ? 'Active' : 'Disabled'}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-12 p-6 rounded-3xl bg-blue-50/50 border-2 border-dashed border-blue-200 text-center">
+                <p className="text-blue-600 font-bold text-sm flex items-center justify-center gap-2">
+                  <CheckCircle2 className="w-4 h-4" /> Changes are applied instantly to the checkout page.
+                </p>
               </div>
             </div>
           </div>
