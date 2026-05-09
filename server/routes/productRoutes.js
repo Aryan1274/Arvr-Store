@@ -59,7 +59,7 @@ router.get('/:id', async (req, res) => {
 // POST new product (Admin typically)
 router.post('/', upload.array('images', 5), async (req, res) => {
   try {
-    const { name, description, price, category, stock, tags, variants } = req.body;
+    const { name, description, price, category, stock, tags, variants, returnPolicy, deliveryTime, shippingCharges } = req.body;
     const imageUrls = req.files ? req.files.map(file => file.path) : [];
     
     let parsedTags = [];
@@ -81,7 +81,10 @@ router.post('/', upload.array('images', 5), async (req, res) => {
       stock: stock || 0,
       tags: parsedTags,
       variants: parsedVariants,
-      images: imageUrls
+      images: imageUrls,
+      returnPolicy: returnPolicy || "No Return",
+      deliveryTime: deliveryTime || "Delivery under 10 days",
+      shippingCharges: shippingCharges || 49
     });
 
     const savedProduct = await product.save();
@@ -111,7 +114,19 @@ router.put('/:id', upload.array('images', 5), async (req, res) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(
       req.params.id,
-      { name, description, price, category, stock, images: imageUrls, tags: parsedTags, variants: parsedVariants },
+      { 
+        name, 
+        description, 
+        price, 
+        category, 
+        stock, 
+        images: imageUrls, 
+        tags: parsedTags, 
+        variants: parsedVariants,
+        returnPolicy,
+        deliveryTime,
+        shippingCharges
+      },
       { returnDocument: 'after' }
     ).populate('tags');
     

@@ -20,18 +20,14 @@ const AdminDashboard = () => {
   // Form States
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [formData, setFormData] = useState({ 
-    name: '', 
-    description: '', 
-    price: '', 
-    category: '', 
-    stock: 0, 
-    tags: [],
     variants: {
       sizes: [],
       colors: [],
       custom: { title: '', options: [] }
-    }
+    },
+    returnPolicy: 'No Return',
+    deliveryTime: 'Delivery under 10 days',
+    shippingCharges: 49
   });
   const [images, setImages] = useState([]); // Array for multi-image
   const [loading, setLoading] = useState(false);
@@ -313,7 +309,10 @@ const AdminDashboard = () => {
       category: product.category,
       stock: product.stock || 0,
       tags: product.tags?.map(t => t._id || t) || [],
-      variants: product.variants || { sizes: [], colors: [], custom: { title: '', options: [] } }
+      variants: product.variants || { sizes: [], colors: [], custom: { title: '', options: [] } },
+      returnPolicy: product.returnPolicy || 'No Return',
+      deliveryTime: product.deliveryTime || 'Delivery under 10 days',
+      shippingCharges: product.shippingCharges || 49
     });
     setIsFormOpen(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -330,6 +329,9 @@ const AdminDashboard = () => {
     data.append('stock', formData.stock);
     data.append('tags', JSON.stringify(formData.tags));
     data.append('variants', JSON.stringify(formData.variants));
+    data.append('returnPolicy', formData.returnPolicy);
+    data.append('deliveryTime', formData.deliveryTime);
+    data.append('shippingCharges', formData.shippingCharges);
 
     if (images && images.length > 0) {
       for (let i = 0; i < images.length; i++) {
@@ -369,7 +371,10 @@ const AdminDashboard = () => {
       category: categories[0]?.name || 'For Her', 
       stock: 0, 
       tags: [],
-      variants: { sizes: [], colors: [], custom: { title: '', options: [] } }
+      variants: { sizes: [], colors: [], custom: { title: '', options: [] } },
+      returnPolicy: 'No Return',
+      deliveryTime: 'Delivery under 10 days',
+      shippingCharges: 49
     });
     setImages([]);
     setIsFormOpen(false);
@@ -903,6 +908,20 @@ const AdminDashboard = () => {
                             {tag.name}
                           </label>
                         ))}
+                      </div>
+                    </div>
+                    <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-3 gap-4 border-t pt-6 mt-4">
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Return Policy</label>
+                        <input type="text" className="w-full border p-2.5 rounded-xl bg-gray-50 text-sm" value={formData.returnPolicy} onChange={e => setFormData({...formData, returnPolicy: e.target.value})} placeholder="e.g. No Return" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Delivery Time</label>
+                        <input type="text" className="w-full border p-2.5 rounded-xl bg-gray-50 text-sm" value={formData.deliveryTime} onChange={e => setFormData({...formData, deliveryTime: e.target.value})} placeholder="e.g. Under 10 days" />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Shipping Charges (₹)</label>
+                        <input type="number" className="w-full border p-2.5 rounded-xl bg-gray-50 text-sm" value={formData.shippingCharges} onChange={e => setFormData({...formData, shippingCharges: e.target.value})} placeholder="49" />
                       </div>
                     </div>
                     {/* Variants / Add-ons Section */}

@@ -18,7 +18,10 @@ const productSchema = new mongoose.Schema({
       title: String,
       options: [String]
     }
-  }
+  },
+  returnPolicy: { type: String, default: "No Return" },
+  deliveryTime: { type: String, default: "Delivery under 10 days" },
+  shippingCharges: { type: Number, default: 49 }
 }, { timestamps: true });
 
 productSchema.pre('save', async function() {

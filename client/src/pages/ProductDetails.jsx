@@ -4,6 +4,7 @@ import api from '../api';
 import ProductCard from '../components/ProductCard';
 import { useCart } from '../context/CartContext';
 import { useCoupons } from '../context/CouponContext';
+import { Truck, RotateCcw, Headphones, CheckCircle2 } from 'lucide-react';
 
 const ProductDetails = () => {
   const { id } = useParams();
@@ -127,6 +128,11 @@ const ProductDetails = () => {
               <p className="text-3xl font-black text-primary">{formatPrice(product.price)}</p>
             )}
           </div>
+          
+          <div className="flex items-center gap-2 mb-6 text-gray-500 font-bold text-xs uppercase tracking-widest bg-gray-50 w-fit px-3 py-2 rounded-xl border border-gray-100">
+            <Truck className="w-4 h-4 text-primary" />
+            <span>Delivery: ₹{product.shippingCharges || 49}</span>
+          </div>
           <p className="text-gray-600 mb-8 leading-relaxed whitespace-pre-wrap">
             {product.description}
           </p>
@@ -194,6 +200,35 @@ const ProductDetails = () => {
             <button onClick={handleBuyNow} className="flex-1 bg-primary hover:bg-pink-500 text-white font-bold py-4 px-6 rounded-2xl shadow-md transition-transform transform hover:scale-[1.02]">
               Buy Now
             </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Policies Section */}
+      <div className="mt-20 py-12 border-t border-b border-gray-100">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex flex-col items-center text-center p-6 rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
+            <div className="w-16 h-16 bg-pink-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+              <RotateCcw className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">{product.returnPolicy || "No Return"}</h3>
+            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">Return Policy</p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-6 rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
+            <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+              <Truck className="w-8 h-8 text-blue-500" />
+            </div>
+            <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">{product.deliveryTime || "Delivery under 10 days"}</h3>
+            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">Fast Delivery</p>
+          </div>
+
+          <div className="flex flex-col items-center text-center p-6 rounded-[2.5rem] bg-white hover:shadow-xl hover:shadow-pink-50 transition-all duration-500 group border border-transparent hover:border-pink-100">
+            <div className="w-16 h-16 bg-green-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+              <Headphones className="w-8 h-8 text-green-500" />
+            </div>
+            <h3 className="text-lg font-black text-gray-900 mb-2 uppercase tracking-tight">24/7 Support</h3>
+            <p className="text-gray-400 text-xs font-bold uppercase tracking-widest leading-relaxed">Customer Service</p>
           </div>
         </div>
       </div>
