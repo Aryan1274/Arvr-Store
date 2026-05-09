@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useCoupons } from '../context/CouponContext';
 
 const Cart = () => {
-  const { cart, updateQuantity, removeFromCart, getCartTotal } = useCart();
+  const { cart, updateQuantity, removeFromCart, getCartTotal, getShippingTotal } = useCart();
   const { getProductDiscount } = useCoupons();
   const navigate = useNavigate();
 
