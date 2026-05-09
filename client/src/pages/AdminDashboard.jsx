@@ -1204,6 +1204,7 @@ const AdminDashboard = () => {
               </div>
             </div>
           </div>
+        )}
         {activeTab === 'payment' && (
           <div className="space-y-8 animate-in fade-in duration-500">
             <div className="bg-white rounded-3xl shadow-sm border p-8">
