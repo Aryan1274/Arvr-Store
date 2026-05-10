@@ -6,6 +6,7 @@ import { jsPDF } from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Plus, Pencil, Trash2, Filter, X, Save, Image as ImageIcon, Calendar, Wrench, ChevronLeft, ChevronRight, Palette, CheckCircle2, Users as UsersIcon, Ticket, Download, Eye, EyeOff, MoveUp, MoveDown, Layout, List, Gift, Zap } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { useCoupons } from '../context/CouponContext';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
