@@ -224,11 +224,27 @@ _Please verify and confirm my order._`;
     try {
       const orderPayload = {
         userId: user?._id || user?.id || null,
-        products: cart.map(item => ({ 
-          product: item._id || item.id, 
-          quantity: item.quantity,
-          selectedOptions: item.selectedOptions
-        })),
+        products: cart.map(item => {
+          let currentPrice = parseFloat(String(item.price).replace('₹', ''));
+          const autoDiscount = getProductDiscount(item._id || item.id);
+          let finalPrice = currentPrice;
+          
+          if (autoDiscount && autoDiscount.type === 'Discount') {
+            if (autoDiscount.discountType === 'Percentage') {
+              finalPrice = currentPrice * (1 - autoDiscount.discountValue / 100);
+            } else {
+              finalPrice = Math.max(0, currentPrice - autoDiscount.discountValue);
+            }
+          }
+          
+          return { 
+            product: item._id || item.id, 
+            quantity: item.quantity,
+            price: finalPrice,
+            originalPrice: currentPrice,
+            selectedOptions: item.selectedOptions
+          };
+        }),
         subTotal: calculateDiscountedTotal() - getShippingTotal(),
         shippingCharges: getShippingTotal(),
         totalPrice: calculateDiscountedTotal(),

@@ -67,6 +67,17 @@ const Profile = () => {
     }
   };
 
+  const handleCancelOrder = async (orderId) => {
+    if (window.confirm('Are you sure you want to cancel this order?')) {
+      try {
+        await api.put(`/api/orders/${orderId}/status`, { status: 'Failed' });
+        fetchOrders();
+      } catch (err) {
+        alert('Failed to cancel order.');
+      }
+    }
+  };
+
   if (!user) return <Navigate to="/login" />;
 
   const handleLogout = () => {
@@ -113,15 +124,45 @@ const Profile = () => {
               <p className="text-sm font-bold text-gray-700 line-clamp-1">{item.product?.name}</p>
               <p className="text-xs text-gray-400">Qty: {item.quantity}</p>
             </div>
-            <p className="text-sm font-bold text-gray-800">₹{item.price * item.quantity}</p>
+            <div className="text-right">
+              {item.originalPrice && item.originalPrice > item.price ? (
+                <>
+                  <p className="text-[10px] text-gray-400 line-through">₹{item.originalPrice * item.quantity}</p>
+                  <p className="text-sm font-bold text-gray-800">₹{item.price * item.quantity}</p>
+                </>
+              ) : (
+                <p className="text-sm font-bold text-gray-800">₹{(item.price || item.product?.price || 0) * item.quantity}</p>
+              )}
+            </div>
           </div>
         ))}
       </div>
       
-      <div className="mt-4 pt-4 border-t flex justify-between items-center">
-        <p className="text-sm text-gray-500 font-medium">Total Amount</p>
-        <p className="text-lg font-black text-primary">₹{order.totalPrice}</p>
+      <div className="mt-4 pt-4 border-t space-y-2">
+        <div className="flex justify-between items-center">
+          <p className="text-xs text-gray-500 font-medium">Subtotal</p>
+          <p className="text-xs font-bold text-gray-800">₹{order.subTotal || 0}</p>
+        </div>
+        <div className="flex justify-between items-center">
+          <p className="text-xs text-gray-500 font-medium">Delivery Charges</p>
+          <p className="text-xs font-bold text-gray-800">₹{order.shippingCharges || 0}</p>
+        </div>
+        <div className="flex justify-between items-center pt-2 border-t border-gray-100">
+          <p className="text-sm text-gray-800 font-black">Total Amount</p>
+          <p className="text-lg font-black text-primary">₹{order.totalPrice}</p>
+        </div>
       </div>
+
+      {order.status === 'Processing' && (
+        <div className="mt-4 flex justify-end">
+          <button 
+            onClick={() => handleCancelOrder(order._id)}
+            className="text-xs font-bold text-red-500 hover:text-red-600 bg-red-50 hover:bg-red-100 px-4 py-2 rounded-lg transition-colors"
+          >
+            Cancel Order
+          </button>
+        </div>
+      )}
     </div>
   );
 
