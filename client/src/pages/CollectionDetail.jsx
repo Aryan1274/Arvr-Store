@@ -175,7 +175,12 @@ const CollectionDetail = () => {
             finalPrice = Math.max(0, p.price - discount.discountValue);
           }
         }
-        return finalPrice <= activeCard.priceLimit;
+        
+        const meetsMinPrice = activeCard.minPriceLimit !== undefined && activeCard.minPriceLimit !== null 
+          ? finalPrice >= activeCard.minPriceLimit 
+          : true;
+          
+        return finalPrice <= activeCard.priceLimit && meetsMinPrice;
       });
     } else {
       displayProducts = activeCard.products || [];

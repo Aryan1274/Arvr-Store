@@ -12,6 +12,7 @@ const collectionSchema = new mongoose.Schema({
     text: { type: String },
     image: { type: String },
     cardType: { type: String, enum: ['price', 'custom'], default: 'price' },
+    minPriceLimit: { type: Number },
     priceLimit: { type: Number },
     products: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Product' }]
   }]

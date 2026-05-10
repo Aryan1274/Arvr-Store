@@ -1666,18 +1666,34 @@ const AdminDashboard = () => {
                                     </div>
 
                                     {card.cardType === 'price' ? (
-                                      <div className="flex items-center gap-2">
-                                        <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Under ₹</span>
-                                        <input 
-                                          type="number"
-                                          className="w-20 bg-white border p-1.5 rounded-lg text-xs font-bold"
-                                          value={card.priceLimit}
-                                          onChange={e => {
-                                            const newCards = [...collectionFormData.cards];
-                                            newCards[cIdx].priceLimit = parseInt(e.target.value) || 0;
-                                            setCollectionFormData({ ...collectionFormData, cards: newCards });
-                                          }}
-                                        />
+                                      <div className="flex items-center gap-4">
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Min ₹ (Optional)</span>
+                                          <input 
+                                            type="number"
+                                            className="w-20 bg-white border p-1.5 rounded-lg text-xs font-bold"
+                                            value={card.minPriceLimit === undefined ? '' : card.minPriceLimit}
+                                            onChange={e => {
+                                              const newCards = [...collectionFormData.cards];
+                                              newCards[cIdx].minPriceLimit = e.target.value ? parseInt(e.target.value) : undefined;
+                                              setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                            }}
+                                            placeholder="0"
+                                          />
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                          <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Under ₹</span>
+                                          <input 
+                                            type="number"
+                                            className="w-20 bg-white border p-1.5 rounded-lg text-xs font-bold"
+                                            value={card.priceLimit}
+                                            onChange={e => {
+                                              const newCards = [...collectionFormData.cards];
+                                              newCards[cIdx].priceLimit = parseInt(e.target.value) || 0;
+                                              setCollectionFormData({ ...collectionFormData, cards: newCards });
+                                            }}
+                                          />
+                                        </div>
                                       </div>
                                     ) : (
                                       <button 
