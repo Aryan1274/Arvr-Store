@@ -62,7 +62,7 @@ const CollectionDetail = () => {
   const { user } = useAuth();
   
   // State for fetching products for price-based cards
-  const [priceFilteredProducts, setPriceFilteredProducts] = useState(null);
+  const [allFetchedProducts, setAllFetchedProducts] = useState(null);
   const [fetchingProducts, setFetchingProducts] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSubscribing, setIsSubscribing] = useState(false);
@@ -99,8 +99,7 @@ const CollectionDetail = () => {
             setFetchingProducts(true);
             const prodRes = await api.get('/api/products');
             const allProducts = prodRes.data || [];
-            const filtered = allProducts.filter(p => p.price <= activeCard.priceLimit);
-            setPriceFilteredProducts(filtered);
+            setAllFetchedProducts(allProducts);
             setFetchingProducts(false);
           }
         }
@@ -165,7 +164,22 @@ const CollectionDetail = () => {
   
   if (isCardDetail) {
     const activeCard = collection.cards[cardIndex];
-    displayProducts = activeCard.cardType === 'price' ? (priceFilteredProducts || []) : (activeCard.products || []);
+    if (activeCard.cardType === 'price' && allFetchedProducts) {
+      displayProducts = allFetchedProducts.filter(p => {
+        let finalPrice = p.price;
+        const discount = getProductDiscount(p._id);
+        if (discount) {
+          if (discount.discountType === 'Percentage') {
+            finalPrice = p.price - (p.price * discount.discountValue / 100);
+          } else {
+            finalPrice = Math.max(0, p.price - discount.discountValue);
+          }
+        }
+        return finalPrice <= activeCard.priceLimit;
+      });
+    } else {
+      displayProducts = activeCard.products || [];
+    }
     displayTitle = activeCard.text;
     displayDesc = activeCard.cardType === 'price' ? `Explore our premium picks under ₹${activeCard.priceLimit}.` : 'Specially curated custom collection just for you.';
     // Cards get a premium gold UI by default
