@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, ShoppingBag, User, X, ShieldCheck, LogOut } from 'lucide-react';
+import { Menu, ShoppingBag, User, X, ShieldCheck, LogOut, MoreHorizontal, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
@@ -9,6 +9,7 @@ const Navbar = () => {
   const { cart } = useCart();
   const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [categories, setCategories] = useState([]);
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
@@ -38,14 +39,56 @@ const Navbar = () => {
         </div>
         
         {/* Desktop Menu */}
-        <div className="hidden md:flex gap-6 lg:gap-8 xl:gap-10 text-sm lg:text-base font-medium text-text-main/80">
-          <a href="/" className="hover:text-primary transition-colors">Shop</a>
+        <div className="hidden md:flex items-center gap-6 lg:gap-8 xl:gap-10 text-sm lg:text-base font-medium text-text-main/80">
+          <Link to="/" className="hover:text-primary transition-colors">Shop</Link>
           {categories.slice(0, 4).map(cat => (
-            <Link key={cat._id} to={`/category/${cat.name.toLowerCase().replace(/ /g, '-')}`} className="hover:text-primary transition-colors">{cat.name}</Link>
+            <Link key={cat._id} to={`/category/${cat.name.toLowerCase().replace(/ /g, '-')}`} className="hover:text-primary transition-colors whitespace-nowrap">{cat.name}</Link>
           ))}
-          <Link to="/contact" className="hover:text-primary transition-colors">Contact Us</Link>
+          
+          {categories.length > 4 && (
+            <div 
+              className="relative group"
+              onMouseEnter={() => setIsMoreOpen(true)}
+              onMouseLeave={() => setIsMoreOpen(false)}
+            >
+              <button 
+                onClick={() => setIsMoreOpen(!isMoreOpen)}
+                className={`flex items-center gap-1 hover:text-primary transition-all p-1 rounded-full ${isMoreOpen ? 'text-primary bg-primary-light' : ''}`}
+              >
+                <MoreHorizontal className="w-6 h-6 lg:w-7 lg:h-7" />
+              </button>
+
+              {/* Mega Dropdown */}
+              <div className={`absolute top-full right-0 mt-2 w-[450px] bg-white rounded-3xl shadow-2xl border border-gray-100 p-6 transform transition-all duration-300 origin-top-right ${isMoreOpen ? 'opacity-100 scale-100 visible' : 'opacity-0 scale-95 invisible'}`}>
+                <div className="grid grid-cols-3 gap-4">
+                  {categories.slice(4).map(cat => (
+                    <Link 
+                      key={cat._id} 
+                      to={`/category/${cat.name.toLowerCase().replace(/ /g, '-')}`}
+                      onClick={() => setIsMoreOpen(false)}
+                      className="group/item flex flex-col items-center gap-2 p-3 rounded-2xl hover:bg-pink-50 transition-all border border-transparent hover:border-pink-100"
+                    >
+                      <div className="w-16 h-16 rounded-full overflow-hidden border-2 border-gray-50 group-hover/item:border-primary/30 transition-all">
+                        <img src={cat.image} alt={cat.name} className="w-full h-full object-cover" />
+                      </div>
+                      <span className="text-xs font-bold text-gray-700 text-center line-clamp-1 group-hover/item:text-primary">{cat.name}</span>
+                    </Link>
+                  ))}
+                  <Link 
+                    to="/categories" 
+                    onClick={() => setIsMoreOpen(false)}
+                    className="col-span-3 mt-4 flex items-center justify-center gap-2 py-3 bg-gray-50 rounded-2xl text-xs font-black uppercase tracking-widest text-gray-500 hover:bg-primary hover:text-white transition-all"
+                  >
+                    View All Categories <ChevronRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+          )}
+
+          <Link to="/contact" className="hover:text-primary transition-colors whitespace-nowrap">Contact Us</Link>
           {user?.role === 'admin' && (
-            <Link to="/admin" className="text-primary font-bold hover:underline">Admin Panel</Link>
+            <Link to="/admin" className="text-primary font-bold hover:underline whitespace-nowrap">Admin Panel</Link>
           )}
         </div>
  
