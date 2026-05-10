@@ -21,12 +21,16 @@ export const CouponProvider = ({ children }) => {
 
   const getProductDiscount = (productId) => {
     // Only 'Discount' type coupons are applied automatically to the product display
-    const discount = coupons.find(c => 
+    const activeCoupons = coupons.filter(c => 
       c.type === 'Discount' && 
       c.isActive &&
       c.applicableProducts.some(p => (p._id || p) === productId)
     );
-    return discount || null;
+    
+    if (activeCoupons.length === 0) return null;
+    
+    // Return the most recently created one
+    return [...activeCoupons].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
   };
 
   return (

@@ -6,7 +6,7 @@ const Product = require('../models/Product');
 // GET all coupons
 router.get('/', async (req, res) => {
   try {
-    const coupons = await Coupon.find().populate('applicableProducts');
+    const coupons = await Coupon.find().populate('applicableProducts').sort({ createdAt: -1 });
     res.json(coupons);
   } catch (err) {
     res.status(500).json({ message: err.message });

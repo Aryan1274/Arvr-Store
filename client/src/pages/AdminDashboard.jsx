@@ -9,6 +9,7 @@ import { useTheme } from '../context/ThemeContext';
 
 const AdminDashboard = () => {
   const { user } = useAuth();
+  const { fetchCoupons: refreshGlobalCoupons } = useCoupons();
   const { theme: currentTheme, updateTheme } = useTheme();
   const [activeTab, setActiveTab] = useState(() => localStorage.getItem('adminActiveTab') || 'orders');
   const [orders, setOrders] = useState([]);
@@ -1367,14 +1368,14 @@ const AdminDashboard = () => {
                     <p className="text-xs text-gray-400 mt-2">Manage Trending, Recommended, and other custom lists.</p>
                   </button>
                   <button 
-                    onClick={() => { setToolActiveMode('coupons'); setCouponStep('type'); }}
+                    onClick={() => { setToolActiveMode('coupons'); setCouponStep('list'); }}
                     className="p-8 rounded-3xl border-2 border-gray-100 hover:border-blue-500 hover:bg-blue-50 transition-all text-center group"
                   >
                     <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                       <Ticket className="w-8 h-8 text-blue-600" />
                     </div>
-                    <h5 className="text-lg font-black text-gray-800">Coupon Generator</h5>
-                    <p className="text-xs text-gray-400 mt-2">Create Discounts, Promo Codes, and Special Offers.</p>
+                    <h5 className="text-lg font-black text-gray-800">Coupon Manager</h5>
+                    <p className="text-xs text-gray-400 mt-2">View, Delete, or Create new Discount & Promo codes.</p>
                   </button>
                 </div>
               )}
@@ -1741,6 +1742,62 @@ const AdminDashboard = () => {
               {/* COUPONS MODE */}
               {toolActiveMode === 'coupons' && (
                 <>
+                  {couponStep === 'list' && (
+                    <div className="space-y-6">
+                      <div className="flex justify-between items-center">
+                        <h5 className="text-sm font-black text-gray-400 uppercase tracking-widest">Active Coupons ({coupons.length})</h5>
+                        <button 
+                          onClick={() => setCouponStep('type')}
+                          className="bg-blue-600 text-white text-[10px] font-black uppercase px-4 py-2 rounded-xl shadow-lg shadow-blue-100 flex items-center gap-1"
+                        >
+                          <Plus className="w-3 h-3" /> Create New
+                        </button>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        {coupons.map(cp => (
+                          <div key={cp._id} className="p-4 bg-gray-50 rounded-2xl border-2 border-gray-100 flex items-center justify-between group hover:border-blue-200 transition-all">
+                            <div className="flex items-center gap-4">
+                              <div className={`p-3 rounded-xl ${cp.type === 'Discount' ? 'bg-amber-100 text-amber-600' : 'bg-blue-100 text-blue-600'}`}>
+                                <Ticket className="w-5 h-5" />
+                              </div>
+                              <div>
+                                <h6 className="font-black text-gray-800 flex items-center gap-2">
+                                  {cp.code}
+                                  <span className="text-[8px] bg-white border px-1.5 py-0.5 rounded uppercase text-gray-400">{cp.type}</span>
+                                </h6>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">
+                                  {cp.discountType === 'Percentage' ? `${cp.discountValue}% OFF` : `₹${cp.discountValue} OFF`}
+                                  <span className="mx-2">•</span>
+                                  {cp.applicableProducts?.length || 0} Products
+                                </p>
+                              </div>
+                            </div>
+                            <button 
+                              onClick={async () => {
+                                if (window.confirm('Delete this coupon permanently?')) {
+                                  try {
+                                    await api.delete(`/api/coupons/${cp._id}`);
+                                    fetchCoupons();
+                                    if (refreshGlobalCoupons) refreshGlobalCoupons();
+                                  } catch (err) { alert('Failed to delete coupon'); }
+                                }
+                              }}
+                              className="p-2 text-red-400 hover:bg-red-50 rounded-lg transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ))}
+                        {coupons.length === 0 && (
+                          <div className="text-center py-12 border-2 border-dashed border-gray-200 rounded-3xl">
+                            <p className="text-sm text-gray-400 font-bold italic">No coupons found. Create one to get started!</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                   {couponStep === 'type' && (
                     <div className="space-y-4">
                       <h5 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Select Coupon Type</h5>
@@ -1872,250 +1929,251 @@ const AdminDashboard = () => {
                               discountValue: Number(couponFormData.discountValue),
                               applicableProducts: selectedCouponProducts
                             });
-                            fetchCoupons();
-                            alert('Coupon created successfully!');
-                            setIsToolsOpen(false);
-                            setToolActiveMode('menu');
-                          } catch (err) { 
-                            alert(err.response?.data?.message || 'Failed to create coupon. Check if the code is already used.'); 
-                          }
-                          finally { setLoading(false); }
-                        }}
-                        disabled={loading}
-                        className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
-                      >
-                        {loading ? 'Creating...' : <><Save className="w-5 h-5" /> Generate Coupon</>}
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            {/* Modal Footer (For Collections Mode) */}
-            {toolActiveMode === 'collections' && (toolView === 'products' || toolView === 'categories') && (
-              <div className="p-6 border-t bg-gray-50/50 flex items-center justify-between">
-                <p className="text-xs font-bold text-gray-400">
-                  {currentToolSection ? `Editing Products for: ${currentToolSection.includes('_card') ? `Card ${parseInt(currentToolSection.split('_card')[1]) + 1}` : currentToolSection}` : 'Select a section to begin'}
-                </p>
-                <button 
-                  onClick={async () => {
-                    if (currentToolSection.includes('_card')) {
-                      // Logic for updating products within a specific card in the form
-                      const [sectionName, cardSuffix] = currentToolSection.split('_card');
-                      const cardIdx = parseInt(cardSuffix);
-                      const newCards = [...collectionFormData.cards];
-                      newCards[cardIdx].products = tempSelectedProducts[currentToolSection] || [];
-                      setCollectionFormData({ ...collectionFormData, cards: newCards });
-                      setToolView('edit');
-                      alert('Card products updated locally. Don\'t forget to Save the Section!');
-                      return;
-                    }
-
-                    setLoading(true);
-                    try {
-                      await api.post('/api/collections', {
-                        name: currentToolSection,
-                        products: tempSelectedProducts[currentToolSection] || []
-                      });
-                      fetchCollections();
-                      alert(`${currentToolSection} products updated successfully!`);
-                      setToolView('sections');
-                    } catch (err) { alert('Failed to update products'); }
-                    finally { setLoading(false); }
-                  }}
-                  disabled={!currentToolSection || loading}
-                  className="bg-primary text-white font-bold py-3 px-8 rounded-2xl shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all flex items-center gap-2 disabled:opacity-50 disabled:grayscale"
-                >
-                  {loading ? 'Saving...' : <><Save className="w-5 h-5" /> {currentToolSection?.includes('_card') ? 'Confirm Selection' : 'Save Product Selection'}</>}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      {/* Variant Modal */}
-      {isVariantModalOpen && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
-            {/* Modal Header */}
-            <div className="bg-gray-50 px-8 py-6 border-b flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest">Manage Add-ons</h2>
-                <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Configure sizes, colors and custom features</p>
-              </div>
-              <button onClick={() => setIsVariantModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
-                <X className="w-6 h-6 text-gray-400" />
-              </button>
-            </div>
-
-            {/* Modal Tabs */}
-            <div className="flex border-b px-8 bg-gray-50/50">
-              {['sizes', 'colors', 'custom'].map(tab => (
-                <button 
-                  key={tab}
-                  onClick={() => setVariantTab(tab)}
-                  className={`py-4 px-6 text-xs font-black uppercase tracking-widest transition-all border-b-2 ${variantTab === tab ? 'border-primary text-primary' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
-                >
-                  {tab}
-                </button>
-              ))}
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
-              {variantTab === 'sizes' && (
-                <div className="space-y-6">
-                  <div className="flex gap-3">
-                    <input 
-                      type="text" 
-                      className="flex-1 border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-primary transition-colors font-bold" 
-                      placeholder="Enter size (e.g. XL, 42, Large)"
-                      value={currentSize}
-                      onChange={e => setCurrentSize(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          if (currentSize.trim()) {
-                            setTempVariants({...tempVariants, sizes: [...tempVariants.sizes, currentSize.trim()]});
-                            setCurrentSize('');
-                          }
-                        }
-                      }}
-                    />
-                    <button onClick={() => {
-                      if (currentSize.trim()) {
-                        setTempVariants({...tempVariants, sizes: [...tempVariants.sizes, currentSize.trim()]});
-                        setCurrentSize('');
-                      }
-                    }} className="bg-primary text-white p-3 rounded-2xl hover:bg-pink-500 transition-all shadow-lg shadow-pink-100 active:scale-95">
-                      <Plus className="w-6 h-6" />
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {tempVariants.sizes.map((s, i) => (
-                      <span key={i} className="bg-pink-50 text-primary text-xs font-black px-4 py-2 rounded-xl flex items-center gap-2 border border-pink-100 shadow-sm animate-in zoom-in duration-200">
-                        {s} <X className="w-4 h-4 cursor-pointer hover:rotate-90 transition-transform" onClick={() => setTempVariants({...tempVariants, sizes: tempVariants.sizes.filter((_, idx) => idx !== i)})} />
-                      </span>
-                    ))}
-                    {tempVariants.sizes.length === 0 && (
-                      <p className="text-sm text-gray-400 font-medium italic">No sizes added yet...</p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {variantTab === 'colors' && (
-                <div className="space-y-6">
-                  <div className="flex gap-3">
-                    <input 
-                      type="text" 
-                      className="flex-1 border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-blue-500 transition-colors font-bold" 
-                      placeholder="Enter color name (e.g. Red, Matte Black)"
-                      value={currentColor}
-                      onChange={e => setCurrentColor(e.target.value)}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          e.preventDefault();
-                          if (currentColor.trim()) {
-                            setTempVariants({...tempVariants, colors: [...tempVariants.colors, currentColor.trim()]});
-                            setCurrentColor('');
-                          }
-                        }
-                      }}
-                    />
-                    <button onClick={() => {
-                      if (currentColor.trim()) {
-                        setTempVariants({...tempVariants, colors: [...tempVariants.colors, currentColor.trim()]});
-                        setCurrentColor('');
-                      }
-                    }} className="bg-blue-600 text-white p-3 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95">
-                      <Plus className="w-6 h-6" />
-                    </button>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {tempVariants.colors.map((c, i) => (
-                      <span key={i} className="bg-blue-50 text-blue-600 text-xs font-black px-4 py-2 rounded-xl flex items-center gap-2 border border-blue-100 shadow-sm animate-in zoom-in duration-200">
-                        {c} <X className="w-4 h-4 cursor-pointer hover:rotate-90 transition-transform" onClick={() => setTempVariants({...tempVariants, colors: tempVariants.colors.filter((_, idx) => idx !== i)})} />
-                      </span>
-                    ))}
-                    {tempVariants.colors.length === 0 && (
-                      <p className="text-sm text-gray-400 font-medium italic">No colors added yet...</p>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {variantTab === 'custom' && (
-                <div className="space-y-8">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Feature Title</label>
-                    <input 
-                      type="text" 
-                      className="w-full border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-amber-500 transition-colors font-bold" 
-                      placeholder="e.g. Material, Print Type, Version"
-                      value={tempVariants.custom.title}
-                      onChange={e => setTempVariants({...tempVariants, custom: {...tempVariants.custom, title: e.target.value}})}
-                    />
-                  </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Add Options</label>
-                    <div className="flex gap-3">
-                      <input 
-                        type="text" 
-                        className="flex-1 border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-amber-500 transition-colors font-bold" 
-                        placeholder="Option name..."
-                        value={currentCustomOption}
-                        onChange={e => setCurrentCustomOption(e.target.value)}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            e.preventDefault();
-                            if (currentCustomOption.trim()) {
-                              setTempVariants({...tempVariants, custom: {...tempVariants.custom, options: [...tempVariants.custom.options, currentCustomOption.trim()]}});
-                              setCurrentCustomOption('');
-                            }
-                          }
-                        }}
-                      />
-                      <button onClick={() => {
-                        if (currentCustomOption.trim()) {
-                          setTempVariants({...tempVariants, custom: {...tempVariants.custom, options: [...tempVariants.custom.options, currentCustomOption.trim()]}});
-                          setCurrentCustomOption('');
-                        }
-                      }} className="bg-amber-500 text-white p-3 rounded-2xl hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 active:scale-95">
-                        <Plus className="w-6 h-6" />
-                      </button>
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-3">
-                    {tempVariants.custom.options.map((o, i) => (
-                      <span key={i} className="bg-amber-50 text-amber-600 text-xs font-black px-4 py-2 rounded-xl flex items-center gap-2 border border-amber-100 shadow-sm animate-in zoom-in duration-200">
-                        {o} <X className="w-4 h-4 cursor-pointer hover:rotate-90 transition-transform" onClick={() => setTempVariants({...tempVariants, custom: {...tempVariants.custom, options: tempVariants.custom.options.filter((_, idx) => idx !== i)}})} />
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Modal Footer */}
-            <div className="bg-gray-50 p-8 border-t flex gap-4">
-              <button onClick={() => setIsVariantModalOpen(false)} className="flex-1 py-4 text-gray-500 font-black uppercase text-xs hover:bg-gray-200 rounded-2xl transition-colors">
-                Cancel
-              </button>
-              <button 
-                onClick={() => {
-                  setFormData({...formData, variants: tempVariants});
-                  setIsVariantModalOpen(false);
-                }}
-                className="flex-1 bg-gray-800 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
-              >
-                <CheckCircle2 className="w-4 h-4" /> Save Add-ons
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+                             fetchCoupons();
+                             if (refreshGlobalCoupons) refreshGlobalCoupons();
+                             alert('Coupon created successfully!');
+                             setIsToolsOpen(false);
+                             setToolActiveMode('menu');
+                           } catch (err) { 
+                             alert(err.response?.data?.message || 'Failed to create coupon. Check if the code is already used.'); 
+                           }
+                           finally { setLoading(false); }
+                         }}
+                         disabled={loading}
+                         className="w-full bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+                       >
+                         {loading ? 'Creating...' : <><Save className="w-5 h-5" /> Generate Coupon</>}
+                       </button>
+                     </div>
+                   )}
+                 </>
+               )}
+             </div>
+ 
+             {/* Modal Footer (For Collections Mode) */}
+             {toolActiveMode === 'collections' && (toolView === 'products' || toolView === 'categories') && (
+               <div className="p-6 border-t bg-gray-50/50 flex items-center justify-between">
+                 <p className="text-xs font-bold text-gray-400">
+                   {currentToolSection ? `Editing Products for: ${currentToolSection.includes('_card') ? `Card ${parseInt(currentToolSection.split('_card')[1]) + 1}` : currentToolSection}` : 'Select a section to begin'}
+                 </p>
+                 <button 
+                   onClick={async () => {
+                     if (currentToolSection.includes('_card')) {
+                       // Logic for updating products within a specific card in the form
+                       const [sectionName, cardSuffix] = currentToolSection.split('_card');
+                       const cardIdx = parseInt(cardSuffix);
+                       const newCards = [...collectionFormData.cards];
+                       newCards[cardIdx].products = tempSelectedProducts[currentToolSection] || [];
+                       setCollectionFormData({ ...collectionFormData, cards: newCards });
+                       setToolView('edit');
+                       alert('Card products updated locally. Don\'t forget to Save the Section!');
+                       return;
+                     }
+ 
+                     setLoading(true);
+                     try {
+                       await api.post('/api/collections', {
+                         name: currentToolSection,
+                         products: tempSelectedProducts[currentToolSection] || []
+                       });
+                       fetchCollections();
+                       alert(`${currentToolSection} products updated successfully!`);
+                       setToolView('sections');
+                     } catch (err) { alert('Failed to update products'); }
+                     finally { setLoading(false); }
+                   }}
+                   disabled={!currentToolSection || loading}
+                   className="bg-primary text-white font-bold py-3 px-8 rounded-2xl shadow-lg shadow-pink-100 hover:bg-pink-500 transition-all flex items-center gap-2 disabled:opacity-50 disabled:grayscale"
+                 >
+                   {loading ? 'Saving...' : <><Save className="w-5 h-5" /> {currentToolSection?.includes('_card') ? 'Confirm Selection' : 'Save Product Selection'}</>}
+                 </button>
+               </div>
+             )}
+           </div>
+         </div>
+       )}
+       {/* Variant Modal */}
+       {isVariantModalOpen && (
+         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+           <div className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+             {/* Modal Header */}
+             <div className="bg-gray-50 px-8 py-6 border-b flex justify-between items-center">
+               <div>
+                 <h2 className="text-xl font-black text-gray-800 uppercase tracking-widest">Manage Add-ons</h2>
+                 <p className="text-[10px] text-gray-400 font-bold uppercase mt-1">Configure sizes, colors and custom features</p>
+               </div>
+               <button onClick={() => setIsVariantModalOpen(false)} className="p-2 hover:bg-gray-200 rounded-full transition-colors">
+                 <X className="w-6 h-6 text-gray-400" />
+               </button>
+             </div>
+ 
+             {/* Modal Tabs */}
+             <div className="flex border-b px-8 bg-gray-50/50">
+               {['sizes', 'colors', 'custom'].map(tab => (
+                 <button 
+                   key={tab}
+                   onClick={() => setVariantTab(tab)}
+                   className={`py-4 px-6 text-xs font-black uppercase tracking-widest transition-all border-b-2 ${variantTab === tab ? 'border-primary text-primary' : 'border-transparent text-gray-400 hover:text-gray-600'}`}
+                 >
+                   {tab}
+                 </button>
+               ))}
+             </div>
+ 
+             {/* Modal Content */}
+             <div className="p-8 max-h-[60vh] overflow-y-auto custom-scrollbar">
+               {variantTab === 'sizes' && (
+                 <div className="space-y-6">
+                   <div className="flex gap-3">
+                     <input 
+                       type="text" 
+                       className="flex-1 border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-primary transition-colors font-bold" 
+                       placeholder="Enter size (e.g. XL, 42, Large)"
+                       value={currentSize}
+                       onChange={e => setCurrentSize(e.target.value)}
+                       onKeyDown={e => {
+                         if (e.key === 'Enter') {
+                           e.preventDefault();
+                           if (currentSize.trim()) {
+                             setTempVariants({...tempVariants, sizes: [...tempVariants.sizes, currentSize.trim()]});
+                             setCurrentSize('');
+                           }
+                         }
+                       }}
+                     />
+                     <button onClick={() => {
+                       if (currentSize.trim()) {
+                         setTempVariants({...tempVariants, sizes: [...tempVariants.sizes, currentSize.trim()]});
+                         setCurrentSize('');
+                       }
+                     }} className="bg-primary text-white p-3 rounded-2xl hover:bg-pink-500 transition-all shadow-lg shadow-pink-100 active:scale-95">
+                       <Plus className="w-6 h-6" />
+                     </button>
+                   </div>
+                   <div className="flex flex-wrap gap-3">
+                     {tempVariants.sizes.map((s, i) => (
+                       <span key={i} className="bg-pink-50 text-primary text-xs font-black px-4 py-2 rounded-xl flex items-center gap-2 border border-pink-100 shadow-sm animate-in zoom-in duration-200">
+                         {s} <X className="w-4 h-4 cursor-pointer hover:rotate-90 transition-transform" onClick={() => setTempVariants({...tempVariants, sizes: tempVariants.sizes.filter((_, idx) => idx !== i)})} />
+                       </span>
+                     ))}
+                     {tempVariants.sizes.length === 0 && (
+                       <p className="text-sm text-gray-400 font-medium italic">No sizes added yet...</p>
+                     )}
+                   </div>
+                 </div>
+               )}
+ 
+               {variantTab === 'colors' && (
+                 <div className="space-y-6">
+                   <div className="flex gap-3">
+                     <input 
+                       type="text" 
+                       className="flex-1 border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-blue-500 transition-colors font-bold" 
+                       placeholder="Enter color name (e.g. Red, Matte Black)"
+                       value={currentColor}
+                       onChange={e => setCurrentColor(e.target.value)}
+                       onKeyDown={e => {
+                         if (e.key === 'Enter') {
+                           e.preventDefault();
+                           if (currentColor.trim()) {
+                             setTempVariants({...tempVariants, colors: [...tempVariants.colors, currentColor.trim()]});
+                             setCurrentColor('');
+                           }
+                         }
+                       }}
+                     />
+                     <button onClick={() => {
+                       if (currentColor.trim()) {
+                         setTempVariants({...tempVariants, colors: [...tempVariants.colors, currentColor.trim()]});
+                         setCurrentColor('');
+                       }
+                     }} className="bg-blue-600 text-white p-3 rounded-2xl hover:bg-blue-700 transition-all shadow-lg shadow-blue-100 active:scale-95">
+                       <Plus className="w-6 h-6" />
+                     </button>
+                   </div>
+                   <div className="flex flex-wrap gap-3">
+                     {tempVariants.colors.map((c, i) => (
+                       <span key={i} className="bg-blue-50 text-blue-600 text-xs font-black px-4 py-2 rounded-xl flex items-center gap-2 border border-blue-100 shadow-sm animate-in zoom-in duration-200">
+                         {c} <X className="w-4 h-4 cursor-pointer hover:rotate-90 transition-transform" onClick={() => setTempVariants({...tempVariants, colors: tempVariants.colors.filter((_, idx) => idx !== i)})} />
+                       </span>
+                     ))}
+                     {tempVariants.colors.length === 0 && (
+                       <p className="text-sm text-gray-400 font-medium italic">No colors added yet...</p>
+                     )}
+                   </div>
+                 </div>
+               )}
+ 
+               {variantTab === 'custom' && (
+                 <div className="space-y-8">
+                   <div className="space-y-3">
+                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Feature Title</label>
+                     <input 
+                       type="text" 
+                       className="w-full border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-amber-500 transition-colors font-bold" 
+                       placeholder="e.g. Material, Print Type, Version"
+                       value={tempVariants.custom.title}
+                       onChange={e => setTempVariants({...tempVariants, custom: {...tempVariants.custom, title: e.target.value}})}
+                     />
+                   </div>
+                   <div className="space-y-3">
+                     <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Add Options</label>
+                     <div className="flex gap-3">
+                       <input 
+                         type="text" 
+                         className="flex-1 border-2 border-gray-100 p-3 rounded-2xl text-sm outline-none focus:border-amber-500 transition-colors font-bold" 
+                         placeholder="Option name..."
+                         value={currentCustomOption}
+                         onChange={e => setCurrentCustomOption(e.target.value)}
+                         onKeyDown={e => {
+                           if (e.key === 'Enter') {
+                             e.preventDefault();
+                             if (currentCustomOption.trim()) {
+                               setTempVariants({...tempVariants, custom: {...tempVariants.custom, options: [...tempVariants.custom.options, currentCustomOption.trim()]}});
+                               setCurrentCustomOption('');
+                             }
+                           }
+                         }}
+                       />
+                       <button onClick={() => {
+                         if (currentCustomOption.trim()) {
+                           setTempVariants({...tempVariants, custom: {...tempVariants.custom, options: [...tempVariants.custom.options, currentCustomOption.trim()]}});
+                           setCurrentCustomOption('');
+                         }
+                       }} className="bg-amber-500 text-white p-3 rounded-2xl hover:bg-amber-600 transition-all shadow-lg shadow-amber-100 active:scale-95">
+                         <Plus className="w-6 h-6" />
+                       </button>
+                     </div>
+                   </div>
+                   <div className="flex flex-wrap gap-3">
+                     {tempVariants.custom.options.map((o, i) => (
+                       <span key={i} className="bg-amber-50 text-amber-600 text-xs font-black px-4 py-2 rounded-xl flex items-center gap-2 border border-amber-100 shadow-sm animate-in zoom-in duration-200">
+                         {o} <X className="w-4 h-4 cursor-pointer hover:rotate-90 transition-transform" onClick={() => setTempVariants({...tempVariants, custom: {...tempVariants.custom, options: tempVariants.custom.options.filter((_, idx) => idx !== i)}})} />
+                       </span>
+                     ))}
+                   </div>
+                 </div>
+               )}
+             </div>
+ 
+             {/* Modal Footer */}
+             <div className="bg-gray-50 p-8 border-t flex gap-4">
+               <button onClick={() => setIsVariantModalOpen(false)} className="flex-1 py-4 text-gray-500 font-black uppercase text-xs hover:bg-gray-200 rounded-2xl transition-colors">
+                 Cancel
+               </button>
+               <button 
+                 onClick={() => {
+                   setFormData({...formData, variants: tempVariants});
+                   setIsVariantModalOpen(false);
+                 }}
+                 className="flex-1 bg-gray-800 text-white py-4 rounded-2xl font-black uppercase text-xs shadow-xl hover:bg-black transition-all active:scale-95 flex items-center justify-center gap-2"
+               >
+                 <CheckCircle2 className="w-4 h-4" /> Save Add-ons
+               </button>
+             </div>
+           </div>
+         </div>
+       )}
     </div>
   );
 };
