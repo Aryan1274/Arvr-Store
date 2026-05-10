@@ -39,6 +39,7 @@ const AdminDashboard = () => {
     shippingCharges: 49
   });
   const [images, setImages] = useState([]); // Array for multi-image
+  const [existingImages, setExistingImages] = useState([]); // Array for existing images when editing
   const [loading, setLoading] = useState(false);
   const [currentSize, setCurrentSize] = useState('');
   const [currentColor, setCurrentColor] = useState('');
@@ -337,6 +338,7 @@ const AdminDashboard = () => {
       deliveryTime: product.deliveryTime || 'Delivery under 10 days',
       shippingCharges: product.shippingCharges || 49
     });
+    setExistingImages(product.images || []);
     setIsFormOpen(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -364,7 +366,7 @@ const AdminDashboard = () => {
 
     if (editingProduct) {
       // Add existing images to data
-      editingProduct.images.forEach(img => data.append('existingImages', img));
+      existingImages.forEach(img => data.append('existingImages', img));
     }
 
     try {
@@ -400,6 +402,7 @@ const AdminDashboard = () => {
       shippingCharges: 49
     });
     setImages([]);
+    setExistingImages([]);
     setIsFormOpen(false);
   };
 
@@ -995,8 +998,50 @@ const AdminDashboard = () => {
                       </div>
                     </div>
                     <div>
-                      <label className="block text-xs font-bold text-gray-400 uppercase mb-1">Images {editingProduct && '(Add more)'}</label>
-                      <input type="file" multiple accept="image/*" className="w-full border p-2 rounded-xl bg-gray-50 text-sm" onChange={e => setImages(e.target.files)} />
+                      <label className="block text-xs font-bold text-gray-400 uppercase mb-3">Product Images</label>
+                      <div className="bg-gray-50 border-2 border-dashed border-gray-200 rounded-2xl p-4">
+                        <div className="flex flex-wrap gap-4 mb-4">
+                          {existingImages.map((url, index) => (
+                            <div key={`existing-${index}`} className="relative w-24 h-24 rounded-xl border border-gray-200 overflow-hidden shadow-sm group">
+                              <img src={url} alt={`Existing ${index}`} className="w-full h-full object-cover" />
+                              <button 
+                                type="button" 
+                                onClick={() => setExistingImages(existingImages.filter((_, i) => i !== index))} 
+                                className="absolute top-1 right-1 bg-white/90 text-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                          {images.map((file, index) => (
+                            <div key={`new-${index}`} className="relative w-24 h-24 rounded-xl border border-primary overflow-hidden shadow-sm group">
+                              <img src={URL.createObjectURL(file)} alt={`New ${index}`} className="w-full h-full object-cover" />
+                              <button 
+                                type="button" 
+                                onClick={() => setImages(images.filter((_, i) => i !== index))} 
+                                className="absolute top-1 right-1 bg-white/90 text-red-500 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500 hover:text-white"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <label className="cursor-pointer bg-white border border-gray-200 hover:border-primary text-gray-600 font-bold py-3 px-6 rounded-xl flex items-center justify-center gap-2 transition-all shadow-sm">
+                          <ImageIcon className="w-5 h-5 text-primary" />
+                          {(existingImages.length + images.length) > 0 ? 'Add More Images' : 'Add Images'}
+                          <input 
+                            type="file" 
+                            multiple 
+                            accept="image/*" 
+                            className="hidden" 
+                            onChange={e => {
+                              if (e.target.files) {
+                                setImages([...images, ...Array.from(e.target.files)]);
+                              }
+                            }} 
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
                   <div className="md:col-span-2 flex justify-end gap-3 pt-4 border-t">
