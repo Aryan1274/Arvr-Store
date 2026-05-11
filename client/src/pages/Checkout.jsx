@@ -126,7 +126,7 @@ const Checkout = () => {
 
   const handleRazorpayPayment = async (orderData) => {
     const options = {
-      key: 'rzp_test_SONVM85SR0Fj0w', 
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SONVM85SR0Fj0w', 
       amount: orderData.razorpayOrder.amount,
       currency: 'INR',
       name: 'ARVR Store',
